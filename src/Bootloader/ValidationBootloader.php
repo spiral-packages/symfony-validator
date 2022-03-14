@@ -2,32 +2,25 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton\Bootloader;
+namespace Spiral\Validation\Symfony\Bootloader;
 
 use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Core\Container;
 use Spiral\Config\ConfiguratorInterface;
-use VendorName\Skeleton\Commands;
-use VendorName\Skeleton\Config\SkeletonConfig;
-use Spiral\Console\Bootloader\ConsoleBootloader;
+use Spiral\Validation\Symfony\Validator\Config\ValidatorConfig;
 
-class SkeletonBootloader extends Bootloader
+class ValidationBootloader extends Bootloader
 {
     protected const BINDINGS = [];
     protected const SINGLETONS = [];
-    protected const DEPENDENCIES = [
-        ConsoleBootloader::class
-    ];
 
     public function __construct(private ConfiguratorInterface $config)
     {
     }
 
-    public function boot(Container $container, ConsoleBootloader $console): void
+    public function boot(Container $container): void
     {
         $this->initConfig();
-
-        $console->addCommand(Commands\SkeletonCommand::class);
     }
 
     public function start(Container $container): void
@@ -37,7 +30,7 @@ class SkeletonBootloader extends Bootloader
     private function initConfig(): void
     {
         $this->config->setDefaults(
-            SkeletonConfig::CONFIG,
+            ValidatorConfig::CONFIG,
             []
         );
     }

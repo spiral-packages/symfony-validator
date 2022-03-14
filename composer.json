@@ -1,24 +1,25 @@
 {
-  "name": ":vendor_slug/:package_slug",
-  "description": ":package_description",
+  "name": "spiral-packages/validator",
+  "description": "This is my package validator",
   "keywords": [
-    ":vendor_name",
+    "spiral-packages",
     "spiral",
-    ":package_slug"
+    "validator"
   ],
-  "homepage": "https://github.com/:vendor_slug/:package_slug",
+  "homepage": "https://github.com/spiral-packages/validator",
   "license": "MIT",
   "authors": [
     {
-      "name": ":author_name",
-      "email": "author@domain.com",
+      "name": "butschster",
+      "email": "butschster@gmail.com",
       "role": "Developer"
     }
   ],
   "require": {
     "php": "^8.0",
     "spiral/boot": "^2.9",
-    "spiral/console": "^2.9"
+    "spiral/console": "^2.9",
+    "symfony/validator": "^5.2|^6.0"
   },
   "require-dev": {
     "mockery/mockery": "^1.5",
@@ -28,13 +29,13 @@
   },
   "autoload": {
     "psr-4": {
-      "VendorName\\Skeleton\\": "src"
+      "Spiral\\Validation\\Symfony\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "VendorName\\Skeleton\\Tests\\App\\": "tests/app",
-      "VendorName\\Skeleton\\Tests\\": "tests/src"
+      "Spiral\\Validation\\Symfony\\Tests\\App\\": "tests/app",
+      "Spiral\\Validation\\Symfony\\Tests\\": "tests/src"
     }
   },
   "scripts": {
@@ -47,7 +48,7 @@
   "extra": {
     "spiral": {
       "bootloaders": [
-        "VendorName\\Skeleton\\Bootloader\\SkeletonBootloader"
+        "Spiral\\Validation\\Symfony\\Bootloader\\ValidationBootloader"
       ]
     }
   },
