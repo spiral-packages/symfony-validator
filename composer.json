@@ -1,5 +1,5 @@
 {
-  "name": "spiral-packages/validator",
+  "name": "spiral-packages/symfony-validator",
   "description": "This is my package validator",
   "keywords": [
     "spiral-packages",
@@ -17,13 +17,14 @@
   ],
   "require": {
     "php": "^8.0",
-    "spiral/boot": "^2.9",
-    "spiral/console": "^2.9",
-    "symfony/validator": "^5.2|^6.0"
+    "doctrine/annotations": "^1.13",
+    "symfony/cache": "^6.0",
+    "symfony/validator": "^5.2"
   },
   "require-dev": {
     "mockery/mockery": "^1.5",
     "phpunit/phpunit": "^9.5",
+    "spiral/filters": "^2.9",
     "spiral/testing": "^1.0",
     "vimeo/psalm": "^4.9"
   },

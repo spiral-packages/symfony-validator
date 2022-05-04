@@ -2,7 +2,7 @@
 
 namespace Spiral\Validation\Symfony\Tests;
 
-class TestCase extends \Spiral\Testing\TestCase
+abstract class TestCase extends \Spiral\Testing\TestCase
 {
     public function rootDirectory(): string
     {
