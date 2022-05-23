@@ -1,58 +1,63 @@
 {
-  "name": "spiral-packages/symfony-validator",
-  "description": "This is my package validator",
-  "keywords": [
-    "spiral-packages",
-    "spiral",
-    "validator"
-  ],
-  "homepage": "https://github.com/spiral-packages/validator",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "butschster",
-      "email": "butschster@gmail.com",
-      "role": "Developer"
-    }
-  ],
-  "require": {
-    "php": "^8.0",
-    "doctrine/annotations": "^1.13",
-    "symfony/cache": "^6.0",
-    "symfony/validator": "^5.2"
-  },
-  "require-dev": {
-    "mockery/mockery": "^1.5",
-    "phpunit/phpunit": "^9.5",
-    "spiral/filters": "^2.9",
-    "spiral/testing": "^1.0",
-    "vimeo/psalm": "^4.9"
-  },
-  "autoload": {
-    "psr-4": {
-      "Spiral\\Validation\\Symfony\\": "src"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Spiral\\Validation\\Symfony\\Tests\\App\\": "tests/app",
-      "Spiral\\Validation\\Symfony\\Tests\\": "tests/src"
-    }
-  },
-  "scripts": {
-    "test": "vendor/bin/phpunit",
-    "psalm": "vendor/bin/psalm --config=psalm.xml ./src"
-  },
-  "config": {
-    "sort-packages": true
-  },
-  "extra": {
-    "spiral": {
-      "bootloaders": [
-        "Spiral\\Validation\\Symfony\\Bootloader\\ValidationBootloader"
-      ]
-    }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "name": "spiral-packages/symfony-validator",
+    "description": "This is my package validator",
+    "keywords": [
+        "spiral-packages",
+        "spiral",
+        "validator"
+    ],
+    "homepage": "https://github.com/spiral-packages/validator",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "butschster",
+            "email": "butschster@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "spiral/filters": "^3.0",
+        "doctrine/annotations": "^1.13",
+        "symfony/cache": "^6.0",
+        "symfony/psr-http-message-bridge": "^2",
+        "symfony/validator": "^6.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5",
+        "phpunit/phpunit": "^9.5",
+        "spiral/framework": "^3.0",
+        "spiral/testing": "^2.0",
+        "vimeo/psalm": "^4.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Spiral\\Validation\\Symfony\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spiral\\Validation\\Symfony\\Tests\\App\\": "tests/app",
+            "Spiral\\Validation\\Symfony\\Tests\\": "tests/src"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "psalm": "vendor/bin/psalm --config=psalm.xml ./src"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "spiral/composer-publish-plugin": true
+        }
+    },
+    "extra": {
+        "spiral": {
+            "bootloaders": [
+                "Spiral\\Validation\\Symfony\\Bootloader\\ValidationBootloader"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
