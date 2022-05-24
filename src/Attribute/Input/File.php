@@ -6,12 +6,12 @@ namespace Spiral\Validation\Symfony\Attribute\Input;
 
 use Psr\Http\Message\UploadedFileInterface;
 use Spiral\Attributes\NamedArgumentConstructor;
-use Spiral\Filters\Attribute\Input\Input;
+use Spiral\Filters\Attribute\Input\AbstractInput;
 use Spiral\Filters\InputInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\UploadedFile as SymfonyUploadedFile;
 
 #[\Attribute(\Attribute::TARGET_PROPERTY), NamedArgumentConstructor]
-final class File extends Input
+final class File extends AbstractInput
 {
     /**
      * @param non-empty-string|null $key
