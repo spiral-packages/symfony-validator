@@ -14,11 +14,8 @@
          stopOnError="false"
          stderr="true">
     <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Feature">
-            <directory suffix="Test.php">tests/Feature</directory>
+        <testsuite name="Symfony validator Bridge Test Suite">
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
 
