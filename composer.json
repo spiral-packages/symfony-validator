@@ -18,7 +18,7 @@
     "require": {
         "php": "^8.1",
         "spiral/filters": "^3.0",
-        "spiral/validations": "^3.0",
+        "spiral/validation": "^3.0",
         "doctrine/annotations": "^1.13",
         "symfony/cache": "^6.0",
         "symfony/psr-http-message-bridge": "^2",
