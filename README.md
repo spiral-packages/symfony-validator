@@ -78,7 +78,7 @@ final class CreatePostFilter extends AttributesFilter
 ```
 
 ### Filter with FilterDefinition
-If you prefer to configure validation rules in an array, you can use a filter with a `FilterDefinition` method definition.
+If you prefer to configure validation rules in an array, you can use a filter with a `filterDefinition` method definition.
 Create a filter class and extend it from the base filter class `Spiral\Filters\Filter`, add `Spiral\Filters\HasFilterDefinition` interface.
 Implement the `filterDefinition` method, which should return a `Spiral\Validation\Symfony\FilterDefinition` object with 
 data mapping rules and validation rules.

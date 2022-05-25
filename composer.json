@@ -1,6 +1,6 @@
 {
     "name": "spiral-packages/symfony-validator",
-    "description": "This is my package validator",
+    "description": "Symfony validator bridge for Spiral Framework",
     "keywords": [
         "spiral-packages",
         "spiral",
