@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony;
 
+use Spiral\Filters\Filter;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidatorInterface;
 use Spiral\Filters\FilterBag;
@@ -20,6 +21,10 @@ class Validation implements ValidationInterface
     {
         if ($data instanceof FilterBag) {
             $data = $data->filter;
+        }
+
+        if ($data instanceof Filter && !$data instanceof AttributesFilter) {
+            $data = $data->getData();
         }
 
         return new Validator($this->validator, $data, $rules, $context);

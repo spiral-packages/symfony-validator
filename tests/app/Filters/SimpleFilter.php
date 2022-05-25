@@ -8,20 +8,14 @@ use Spiral\Filters\Attribute\Input\Post;
 use Spiral\Validation\Symfony\AttributesFilter;
 use Symfony\Component\Validator\Constraints;
 
-final class CreatePostFilter extends AttributesFilter
+final class SimpleFilter extends AttributesFilter
 {
     #[Post]
     #[Constraints\NotBlank]
-    #[Constraints\Length(min: 5)]
-    public string $title;
+    public string $username;
 
     #[Post]
+    #[Constraints\Email]
     #[Constraints\NotBlank]
-    #[Constraints\Length(min: 5)]
-    public string $slug;
-
-    #[Post]
-    #[Constraints\NotBlank]
-    #[Constraints\Positive]
-    public int $sort;
+    public string $email;
 }

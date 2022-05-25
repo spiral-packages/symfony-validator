@@ -18,6 +18,7 @@
     "require": {
         "php": "^8.1",
         "spiral/filters": "^3.0",
+        "spiral/validations": "^3.0",
         "doctrine/annotations": "^1.13",
         "symfony/cache": "^6.0",
         "symfony/psr-http-message-bridge": "^2",
@@ -26,7 +27,7 @@
     "require-dev": {
         "mockery/mockery": "^1.5",
         "phpunit/phpunit": "^9.5",
-        "spiral/framework": "^3.0",
+        "spiral/framework": "3.0.x-dev",
         "spiral/testing": "^2.0",
         "vimeo/psalm": "^4.9"
     },

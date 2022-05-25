@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Spiral\Validation\Symfony\Bootloader;
 
 use Spiral\Boot\Bootloader\Bootloader;
+use Spiral\Validation\Bootloader\ValidationBootloader;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Spiral\Validation\Symfony\Validation;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidationProvider;
 
-class ValidationBootloader extends Bootloader
+class ValidatorBootloader extends Bootloader
 {
-    protected const BINDINGS = [];
+    protected const DEPENDENCIES = [
+        ValidationBootloader::class
+    ];
+
     protected const SINGLETONS = [
         Validation::class => [self::class, 'initValidation'],
     ];

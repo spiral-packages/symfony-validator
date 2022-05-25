@@ -9,13 +9,19 @@ use Spiral\Filters\ShouldBeValidated;
 
 class FilterDefinition implements FilterDefinitionInterface, ShouldBeValidated
 {
+    public function __construct(
+        private array $validationRules = [],
+        private array $mappingSchema = []
+    ) {
+    }
+
     public function mappingSchema(): array
     {
-        return [];
+        return $this->mappingSchema;
     }
 
     public function validationRules(): array
     {
-        return [];
+        return $this->validationRules;
     }
 }
