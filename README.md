@@ -54,7 +54,9 @@ namespace App\Filters;
 
 use Psr\Http\Message\UploadedFileInterface;
 use Spiral\Filters\Attribute\Input\Post;
+use Spiral\Validation\Symfony\Attribute\Input\File;
 use Spiral\Validation\Symfony\AttributesFilter;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints;
 
 final class CreatePostFilter extends AttributesFilter
@@ -73,6 +75,10 @@ final class CreatePostFilter extends AttributesFilter
     #[Constraints\NotBlank]
     #[Constraints\Positive]
     public int $sort;
+    
+    #[File]
+    #[Constraints\Image]
+    public UploadedFile $image;
 }
 
 ```
@@ -99,6 +105,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\Image;
 
 final class CreatePostFilter extends Filter implements HasFilterDefinition
 {
@@ -108,12 +115,14 @@ final class CreatePostFilter extends Filter implements HasFilterDefinition
             [
                 'title' => [new NotBlank(), new Length(min: 5)],
                 'slug' => [new NotBlank(), new Length(min: 5)],
-                'sort' => [new NotBlank(), new Positive()]
+                'sort' => [new NotBlank(), new Positive()],
+                'image' => [new Image()]
             ],
             [
                 'title' => 'title',
                 'slug' => 'slug',
-                'sort' => 'sort'
+                'sort' => 'sort',
+                'image' => 'symfony-file:image'
             ]
         );
     }

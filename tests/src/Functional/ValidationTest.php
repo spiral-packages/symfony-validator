@@ -4,28 +4,36 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\Functional;
 
+use Nyholm\Psr7\UploadedFile;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Spiral\Filters\Exception\ValidationException;
-use Spiral\Filters\InputInterface;
 use Spiral\Validation\Symfony\Tests\App\Filters\CreatePostFilter;
 use Spiral\Validation\Symfony\Tests\App\Filters\FilterWithArrayMapping;
 use Spiral\Validation\Symfony\Tests\App\Filters\SimpleFilter;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 final class ValidationTest extends TestCase
 {
     /** @dataProvider requestsSuccessProvider */
-    public function testValidationSuccess(string $filterClass, array $data): void
+    public function testValidationSuccess(string $filterClass, array $data, bool $withFile = false): void
     {
-        $this->getContainer()->bind(InputInterface::class, $this->initInputScope($data));
+        $this->getContainer()->bind(ServerRequestInterface::class, $this->createRequest($data, $withFile));
 
-        $filter = $this->getContainer()->get($filterClass);
+        $filter = $this->getContainer()->get($filterClass)->getData();
 
-        $this->assertSame($data, $filter->getData());
+        if ($withFile) {
+            $this->assertInstanceOf(SymfonyUploadedFile::class, $filter['image']);
+            unset($filter['image']);
+        }
+
+        $this->assertSame($data, $filter);
     }
 
     /** @dataProvider requestsErrorProvider */
-    public function testValidationError(string $filterClass, array $data): void
+    public function testValidationError(string $filterClass, array $data, bool $withFile = false): void
     {
-        $this->getContainer()->bind(InputInterface::class, $this->initInputScope($data));
+        $this->getContainer()->bind(ServerRequestInterface::class, $this->createRequest($data, $withFile));
 
         $this->expectException(ValidationException::class);
         $this->getContainer()->get($filterClass);
@@ -34,8 +42,8 @@ final class ValidationTest extends TestCase
     public function requestsSuccessProvider(): \Traversable
     {
         yield [SimpleFilter::class, ['username' => 'foo', 'email' => 'foo@gmail.com']];
-        yield [FilterWithArrayMapping::class, ['username' => 'foo', 'email' => 'foo@gmail.com']];
-        yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post', 'sort' => 1]];
+        yield [FilterWithArrayMapping::class, ['username' => 'foo', 'email' => 'foo@gmail.com'], true];
+        yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post', 'sort' => 1], true];
     }
 
     public function requestsErrorProvider(): \Traversable
@@ -53,29 +61,25 @@ final class ValidationTest extends TestCase
         yield [CreatePostFilter::class, ['title' => 'foo', 'slug' => 'foo', 'sort' => 1]];
     }
 
-    private function initInputScope(array $data): InputInterface
+    private function createRequest(array $data, bool $withFile = false): ServerRequestInterface
     {
-        return new class($data) implements InputInterface {
+        $factory = $this->getContainer()->get(ServerRequestFactoryInterface::class);
 
-            public function __construct(
-                private array $data
-            ) {
-            }
+        $request = $factory->createServerRequest('POST', '/foo')->withParsedBody($data);
 
-            public function withPrefix(string $prefix, bool $add = true): InputInterface
-            {
-                return $this;
-            }
+        if ($withFile) {
+            $path = \dirname(__DIR__, 2) . '/app/fixtures/sample-1.jpg';
 
-            public function getValue(string $source, string $name = null): mixed
-            {
-                return $this->data[$name] ?? null;
-            }
+            $request = $request->withUploadedFiles([
+                'image' => new UploadedFile(
+                    fopen($path, 'rb'),
+                    filesize($path),
+                    0,
+                    $path
+                )
+            ]);
+        }
 
-            public function hasValue(string $source, string $name): bool
-            {
-                return isset($this->data);
-            }
-        };
+        return $request;
     }
 }

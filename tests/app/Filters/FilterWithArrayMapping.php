@@ -9,6 +9,7 @@ use Spiral\Filters\FilterDefinitionInterface;
 use Spiral\Filters\HasFilterDefinition;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 final class FilterWithArrayMapping extends Filter implements HasFilterDefinition
@@ -18,11 +19,13 @@ final class FilterWithArrayMapping extends Filter implements HasFilterDefinition
         return new FilterDefinition(
             [
                 'username' => [new NotBlank()],
-                'email' => [new NotBlank(), new Email()]
+                'email' => [new NotBlank(), new Email()],
+                'image' => [new Image()]
             ],
             [
                 'username' => 'username',
-                'email' => 'email'
+                'email' => 'email',
+                'image' => 'symfony-file:image'
             ]
         );
     }
