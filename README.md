@@ -1,9 +1,9 @@
 # Symfony validator bridge for Spiral Framework
 
-[![PHP](https://img.shields.io/packagist/php-v/spiral-packages/validator.svg?style=flat-square)](https://packagist.org/packages/spiral-packages/validator)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/spiral-packages/validator.svg?style=flat-square)](https://packagist.org/packages/spiral-packages/validator)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spiral-packages/validator/run-tests?label=tests&style=flat-square)](https://github.com/spiral-packages/validator/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/spiral-packages/validator.svg?style=flat-square)](https://packagist.org/packages/spiral-packages/validator)
+[![PHP](https://img.shields.io/packagist/php-v/spiral-packages/symfony-validator.svg?style=flat-square)](https://packagist.org/packages/spiral-packages/symfony-validator)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/spiral-packages/symfony-validator.svg?style=flat-square)](https://packagist.org/packages/spiral-packages/symfony-validator)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spiral-packages/symfony-validator/run-tests?label=tests&style=flat-square)](https://github.com/spiral-packages/symfony-validator/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/spiral-packages/symfony-validator.svg?style=flat-square)](https://packagist.org/packages/spiral-packages/symfony-validator)
 
 ## Requirements
 
