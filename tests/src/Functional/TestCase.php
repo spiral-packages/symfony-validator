@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\Functional;
 
-use Spiral\Attributes\Bootloader\AttributesBootloader;
+use Spiral\Bootloader\Attributes\AttributesBootloader;
 use Spiral\Bootloader\Security\FiltersBootloader;
-use Spiral\Http\Bootloader\DiactorosBootloader;
+use Spiral\Nyholm\Bootloader\NyholmBootloader;
 use Spiral\Validation\Bootloader\ValidationBootloader;
 use Spiral\Validation\Symfony\Bootloader\ValidatorBootloader;
 
@@ -21,7 +21,7 @@ abstract class TestCase extends \Spiral\Testing\TestCase
     {
         return [
             AttributesBootloader::class,
-            DiactorosBootloader::class,
+            NyholmBootloader::class,
             FiltersBootloader::class,
             ValidationBootloader::class,
             ValidatorBootloader::class,

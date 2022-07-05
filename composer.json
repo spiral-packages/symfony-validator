@@ -22,7 +22,9 @@
         "doctrine/annotations": "^1.13",
         "symfony/cache": "^6.0",
         "symfony/psr-http-message-bridge": "^2",
-        "symfony/validator": "^6.0"
+        "symfony/validator": "^6.0",
+        "spiral/attributes": "^3.0",
+        "spiral/http": "^3.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.5",
@@ -30,7 +32,7 @@
         "spiral/framework": "3.0.x-dev",
         "spiral/testing": "^2.0",
         "vimeo/psalm": "^4.9",
-        "spiral/http": "^3.0"
+        "spiral/nyholm-bridge": "^1.2"
     },
     "autoload": {
         "psr-4": {
