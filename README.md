@@ -12,7 +12,6 @@ Make sure that your server is configured with following PHP version and extensio
 - PHP 8.1+
 - Spiral framework 3.0+
 
-
 ## Installation
 
 You can install the package via composer:
@@ -39,12 +38,14 @@ First of all, need to create a filter that will receive incoming data that will 
 
 ### Filter with Attributes
 
-Create a filter class and extend it from the base filter class with attributes `Spiral\Validation\Symfony\AttributesFilter`.
+Create a filter class and extend it from the base filter class with
+attributes `Spiral\Validation\Symfony\AttributesFilter`.
 Define the required properties, and add attributes to them indicating the data source and validation rules.
 All available validation rules can be found here:
 https://symfony.com/doc/current/validation.html#constraints
 
 Example:
+
 ```php
 <?php
 
@@ -84,12 +85,65 @@ final class CreatePostFilter extends AttributesFilter
 ```
 
 ### Filter with FilterDefinition
-If you prefer to configure validation rules in an array, you can use a filter with a `filterDefinition` method definition.
-Create a filter class and extend it from the base filter class `Spiral\Filters\Filter`, add `Spiral\Filters\HasFilterDefinition` interface.
-Implement the `filterDefinition` method, which should return a `Spiral\Validation\Symfony\FilterDefinition` object with 
+
+If you prefer to configure validation rules in an array, you can use a filter with a `filterDefinition` method
+definition.
+Create a filter class and extend it from the base filter class `Spiral\Filters\Filter`,
+add `Spiral\Filters\HasFilterDefinition` interface.
+Implement the `filterDefinition` method, which should return a `Spiral\Validation\Symfony\FilterDefinition` object with
 data mapping rules and validation rules.
 
 Example:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filters;
+
+use Spiral\Filters\Filter;
+use Spiral\Filters\FilterDefinitionInterface;
+use Spiral\Filters\HasFilterDefinition;
+use Spiral\Validation\Symfony\FilterDefinition;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\Image;
+use Spiral\Filters\Attribute\Input\Post;
+use Spiral\Validation\Symfony\Attribute\Input\File;
+
+final class CreatePostFilter extends Filter implements HasFilterDefinition
+{
+    #[Post]
+    public string $title;
+
+    #[Post]
+    public string $slug;
+
+    #[Post]
+    public int $sort;
+    
+    #[File]
+    public UploadedFile $image;
+    
+    public function filterDefinition(): FilterDefinitionInterface
+    {
+        return new FilterDefinition(
+            [
+                'title' => [new NotBlank(), new Length(min: 5)],
+                'slug' => [new NotBlank(), new Length(min: 5)],
+                'sort' => [new NotBlank(), new Positive()],
+                'image' => [new Image()]
+            ]
+        );
+    }
+}
+```
+
+or
+
 ```php
 <?php
 
@@ -132,6 +186,7 @@ final class CreatePostFilter extends Filter implements HasFilterDefinition
 ### Using a Filter and getting validation errors
 
 Example:
+
 ```php
 use App\Filters\CreatePostFilter;
 use Spiral\Filters\Exception\ValidationException;

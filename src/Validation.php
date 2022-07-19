@@ -4,27 +4,31 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony;
 
-use Spiral\Filters\Filter;
+use Spiral\Filters\Dto\Filter;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidatorInterface;
-use Spiral\Filters\FilterBag;
+use Spiral\Filters\Dto\FilterBag;
 use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidatorInterface;
 
 class Validation implements ValidationInterface
 {
     public function __construct(
-        private SymfonyValidatorInterface $validator
+        private readonly SymfonyValidatorInterface $validator
     ) {
     }
 
     public function validate(mixed $data, array $rules, $context = null): ValidatorInterface
     {
         if ($data instanceof FilterBag) {
-            $data = $data->filter;
-        }
+            $filter = $data->filter;
 
-        if ($data instanceof Filter && !$data instanceof AttributesFilter) {
-            $data = $data->getData();
+            if ($filter instanceof AttributesFilter) {
+                $data = $filter;
+            } elseif ($filter instanceof Filter) {
+                $data = $filter->getData();
+            } else {
+                $data = $data->entity->toArray();
+            }
         }
 
         return new Validator($this->validator, $data, $rules, $context);
