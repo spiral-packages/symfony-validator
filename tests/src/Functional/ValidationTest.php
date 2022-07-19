@@ -34,8 +34,8 @@ final class ValidationTest extends TestCase
     public function testValidationError(string $filterClass, array $data, bool $withFile = false): void
     {
         $this->getContainer()->bind(ServerRequestInterface::class, $this->createRequest($data, $withFile));
-
         $this->expectException(ValidationException::class);
+
         $this->getContainer()->get($filterClass);
     }
 

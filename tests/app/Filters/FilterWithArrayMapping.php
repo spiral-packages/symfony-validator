@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\App\Filters;
 
-use Spiral\Filters\Filter;
-use Spiral\Filters\FilterDefinitionInterface;
-use Spiral\Filters\HasFilterDefinition;
+use Spiral\Filters\Dto\Filter;
+use Spiral\Filters\Dto\FilterDefinitionInterface;
+use Spiral\Filters\Dto\HasFilterDefinition;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Image;
