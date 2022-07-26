@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony;
 
-use Spiral\Filters\Dto\Filter;
+use Spiral\Filters\Model\Filter;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidatorInterface;
-use Spiral\Filters\Dto\FilterBag;
+use Spiral\Filters\Model\FilterBag;
 use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidatorInterface;
 
 class Validation implements ValidationInterface
