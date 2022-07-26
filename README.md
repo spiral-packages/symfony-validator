@@ -88,8 +88,8 @@ final class CreatePostFilter extends AttributesFilter
 
 If you prefer to configure validation rules in an array, you can use a filter with a `filterDefinition` method
 definition.
-Create a filter class and extend it from the base filter class `Spiral\Filters\Filter`,
-add `Spiral\Filters\HasFilterDefinition` interface.
+Create a filter class and extend it from the base filter class `Spiral\Filters\Model\Filter`,
+add `Spiral\Filters\Model\HasFilterDefinition` interface.
 Implement the `filterDefinition` method, which should return a `Spiral\Validation\Symfony\FilterDefinition` object with
 data mapping rules and validation rules.
 
@@ -102,9 +102,9 @@ declare(strict_types=1);
 
 namespace App\Filters;
 
-use Spiral\Filters\Filter;
-use Spiral\Filters\FilterDefinitionInterface;
-use Spiral\Filters\HasFilterDefinition;
+use Spiral\Filters\Model\Filter;
+use Spiral\Filters\Model\FilterDefinitionInterface;
+use Spiral\Filters\Model\HasFilterDefinition;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
@@ -151,9 +151,9 @@ declare(strict_types=1);
 
 namespace App\Filters;
 
-use Spiral\Filters\Filter;
-use Spiral\Filters\FilterDefinitionInterface;
-use Spiral\Filters\HasFilterDefinition;
+use Spiral\Filters\Model\Filter;
+use Spiral\Filters\Model\FilterDefinitionInterface;
+use Spiral\Filters\Model\HasFilterDefinition;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
