@@ -17,19 +17,19 @@
     ],
     "require": {
         "php": "^8.1",
-        "spiral/filters": "^3.0",
-        "spiral/validation": "^3.0",
+        "spiral/filters": "^3.1",
+        "spiral/validation": "^3.1",
         "doctrine/annotations": "^1.13",
         "symfony/cache": "^6.0",
         "symfony/psr-http-message-bridge": "^2",
         "symfony/validator": "^6.0",
-        "spiral/attributes": "^2.8 || ^3.0",
-        "spiral/http": "^3.0"
+        "spiral/attributes": "^2.8 || ^3.1",
+        "spiral/http": "^3.1"
     },
     "require-dev": {
         "mockery/mockery": "^1.5",
         "phpunit/phpunit": "^9.5",
-        "spiral/framework": "^3.0",
+        "spiral/framework": "^3.1",
         "spiral/testing": "^2.0",
         "vimeo/psalm": "^4.9",
         "spiral/nyholm-bridge": "^1.2"
