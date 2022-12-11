@@ -58,7 +58,7 @@
     "extra": {
         "spiral": {
             "bootloaders": [
-                "Spiral\\Validation\\Symfony\\Bootloader\\ValidationBootloader"
+                "Spiral\\Validation\\Symfony\\Bootloader\\ValidatorBootloader"
             ]
         }
     },
