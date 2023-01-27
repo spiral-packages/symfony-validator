@@ -10,9 +10,10 @@ use Spiral\Validation\Symfony\Validation;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidationProviderInterface;
 use Spiral\Validation\Symfony\Bootloader\ValidatorBootloader;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\EmailValidator;
-use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
+use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 
 final class ValidatorBootloaderTest extends TestCase
 {
@@ -33,16 +34,19 @@ final class ValidatorBootloaderTest extends TestCase
     {
         $this->assertContainerBoundAsSingleton(
             ConstraintValidatorFactoryInterface::class,
-            ConstraintValidatorFactory::class
+            ContainerConstraintValidatorFactory::class
         );
     }
 
-    public function testDefaultConstraintValidatorFactoryContainsEmailValidator(): void
+    public function testEmailValidatorShouldBeBound(): void
     {
         $factory = $this->getContainer()->get(ConstraintValidatorFactoryInterface::class);
-        $validators = (new \ReflectionProperty($factory, 'validators'))->getValue($factory);
+        $validator = $factory->getInstance(new Email());
 
-        $this->assertCount(1, $validators);
-        $this->assertInstanceOf(EmailValidator::class, $validators[EmailValidator::class]);
+        $this->assertInstanceOf(EmailValidator::class, $validator);
+        $this->assertSame(
+            Email::VALIDATION_MODE_HTML5,
+            (new \ReflectionProperty($validator, 'defaultMode'))->getValue($validator)
+        );
     }
 }
