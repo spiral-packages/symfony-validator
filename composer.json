@@ -22,7 +22,7 @@
         "doctrine/annotations": "^1.13",
         "symfony/cache": "^6.0",
         "symfony/psr-http-message-bridge": "^2",
-        "symfony/validator": "^6.0",
+        "symfony/validator": "^6.2",
         "spiral/attributes": "^2.8 || ^3.1",
         "spiral/http": "^3.1"
     },
