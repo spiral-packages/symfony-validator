@@ -12,6 +12,10 @@ use Spiral\Validation\Symfony\Http\Request\FilesBag;
 use Spiral\Validation\Symfony\Validation;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidationProvider;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\EmailValidator;
+use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
+use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 
 class ValidatorBootloader extends Bootloader
 {
@@ -21,6 +25,11 @@ class ValidatorBootloader extends Bootloader
 
     protected const SINGLETONS = [
         Validation::class => [self::class, 'initValidation'],
+        ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,
+    ];
+
+    protected const BINDINGS = [
+        EmailValidator::class => [self::class, 'initEmailValidator']
     ];
 
     public function init(HttpBootloader $http): void
@@ -41,12 +50,21 @@ class ValidatorBootloader extends Bootloader
         $validation->setDefaultValidator(FilterDefinition::class);
     }
 
-    private function initValidation(): ValidationInterface
+    private function initValidation(ConstraintValidatorFactoryInterface $validatorFactory): ValidationInterface
     {
         return new Validation(
             \Symfony\Component\Validator\Validation::createValidatorBuilder()
                 ->enableAnnotationMapping()
+                ->setConstraintValidatorFactory($validatorFactory)
                 ->getValidator()
         );
+    }
+
+    /**
+     * See https://github.com/symfony/validator/commit/c7e2dd03170a27f8ac04f2908fe7a6a4ca17e0f2
+     */
+    private function initEmailValidator(): EmailValidator
+    {
+        return new EmailValidator(Email::VALIDATION_MODE_HTML5);
     }
 }
