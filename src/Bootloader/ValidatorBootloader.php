@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\EmailValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidatorBootloader extends Bootloader
 {
@@ -24,7 +25,8 @@ class ValidatorBootloader extends Bootloader
     ];
 
     protected const SINGLETONS = [
-        Validation::class => [self::class, 'initValidation'],
+        Validation::class => Validation::class,
+        ValidatorInterface::class => [self::class, 'initSymfonyValidator'],
         ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,
     ];
 
@@ -50,14 +52,12 @@ class ValidatorBootloader extends Bootloader
         $validation->setDefaultValidator(FilterDefinition::class);
     }
 
-    private function initValidation(ConstraintValidatorFactoryInterface $validatorFactory): ValidationInterface
+    private function initSymfonyValidator(ConstraintValidatorFactoryInterface $validatorFactory): ValidatorInterface
     {
-        return new Validation(
-            \Symfony\Component\Validator\Validation::createValidatorBuilder()
-                ->enableAnnotationMapping()
-                ->setConstraintValidatorFactory($validatorFactory)
-                ->getValidator()
-        );
+        return \Symfony\Component\Validator\Validation::createValidatorBuilder()
+            ->enableAnnotationMapping()
+            ->setConstraintValidatorFactory($validatorFactory)
+            ->getValidator();
     }
 
     /**

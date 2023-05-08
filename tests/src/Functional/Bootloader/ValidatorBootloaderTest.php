@@ -14,6 +14,8 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\EmailValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ValidatorBootloaderTest extends TestCase
 {
@@ -48,5 +50,10 @@ final class ValidatorBootloaderTest extends TestCase
             Email::VALIDATION_MODE_HTML5,
             (new \ReflectionProperty($validator, 'defaultMode'))->getValue($validator)
         );
+    }
+
+    public function testSymfonyValidatorShouldBeBoundAsSingleton(): void
+    {
+        $this->assertContainerBoundAsSingleton(ValidatorInterface::class, RecursiveValidator::class);
     }
 }

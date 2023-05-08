@@ -19,7 +19,7 @@
         "php": "^8.1",
         "spiral/filters": "^3.1",
         "spiral/validation": "^3.1",
-        "doctrine/annotations": "^1.13",
+        "doctrine/annotations": "^1.13 || ^2.0",
         "symfony/cache": "^6.0",
         "symfony/psr-http-message-bridge": "^2",
         "symfony/validator": "^6.0",
