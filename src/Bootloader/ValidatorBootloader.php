@@ -55,7 +55,7 @@ class ValidatorBootloader extends Bootloader
     private function initSymfonyValidator(ConstraintValidatorFactoryInterface $validatorFactory): ValidatorInterface
     {
         return \Symfony\Component\Validator\Validation::createValidatorBuilder()
-            ->enableAnnotationMapping()
+            ->enableAttributeMapping()
             ->setConstraintValidatorFactory($validatorFactory)
             ->getValidator();
     }
