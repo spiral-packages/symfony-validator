@@ -20,9 +20,9 @@
         "spiral/filters": "^3.1",
         "spiral/validation": "^3.1",
         "doctrine/annotations": "^1.13 || ^2.0",
-        "symfony/cache": "^6.0",
+        "symfony/cache": "^6.4 || ^7.0",
         "symfony/psr-http-message-bridge": "^2",
-        "symfony/validator": "^6.0",
+        "symfony/validator": "^6.4 || ^7.0",
         "spiral/attributes": "^2.8 || ^3.0",
         "spiral/http": "^3.1"
     },
