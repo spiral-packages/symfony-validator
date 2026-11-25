@@ -68,6 +68,11 @@
         "allow-plugins": {
             "spiral/composer-publish-plugin": true,
             "llm/skills": true
+        },
+        "audit": {
+            "ignore-abandoned": {
+                "doctrine/annotations": "Abandoned upstream without a replacement and has no advisories; still required here and by spiral/framework"
+            }
         }
     },
     "extra": {
