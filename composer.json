@@ -28,6 +28,8 @@
     },
     "require-dev": {
         "buggregator/trap": "^1.13",
+        "llm/skills": "^1.23",
+        "roxblnfk/unpoly": "^1.8",
         "spiral/framework": "^3.15",
         "spiral/nyholm-bridge": "^1.2",
         "testo/testo": "^0.10.55",
@@ -51,7 +53,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "spiral/composer-publish-plugin": true
+            "spiral/composer-publish-plugin": true,
+            "llm/skills": true
         }
     },
     "extra": {
