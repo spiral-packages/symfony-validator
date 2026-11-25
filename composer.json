@@ -2,19 +2,32 @@
     "name": "spiral-packages/symfony-validator",
     "description": "Symfony validator bridge for Spiral Framework",
     "keywords": [
-        "spiral-packages",
         "spiral",
-        "validator"
+        "spiral-framework",
+        "symfony",
+        "validator",
+        "validation",
+        "filters",
+        "attributes"
     ],
-    "homepage": "https://github.com/spiral-packages/validator",
+    "homepage": "https://spiral.dev/docs/validation-symfony",
     "license": "MIT",
     "authors": [
         {
             "name": "butschster",
             "email": "butschster@gmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "Aleksei Gagarin (roxblnfk)",
+            "email": "alexey.gagarin@spiralscout.com"
         }
     ],
+    "support": {
+        "docs": "https://spiral.dev/docs/validation-symfony",
+        "issues": "https://github.com/spiral-packages/symfony-validator/issues",
+        "source": "https://github.com/spiral-packages/symfony-validator"
+    },
     "require": {
         "php": "^8.2",
         "spiral/filters": "^3.1",
