@@ -9,3 +9,4 @@
 /psalm-baseline.xml export-ignore
 /psalm.xml.dist     export-ignore
 /UPGRADING.md       export-ignore
+/skills.json        export-ignore
