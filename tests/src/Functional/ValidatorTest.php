@@ -8,6 +8,7 @@ use Spiral\Validation\Symfony\Tests\App\Filters\SimpleFilter;
 use Spiral\Validation\Symfony\Validation;
 use Spiral\Validation\ValidatorInterface;
 use Symfony\Component\Validator\Constraints;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Testo\Assert;
 use Testo\Skip;
 use Testo\Test;
@@ -81,6 +82,22 @@ final class ValidatorTest extends TestCase
         Assert::null($validator->getContext());
     }
 
+    public function testErrorsAreComputedOnce(): void
+    {
+        $calls = 0;
+        $rule = new Constraints\Callback(
+            static function (mixed $value, ExecutionContextInterface $context) use (&$calls): void {
+                ++$calls;
+                $context->addViolation('Invalid.');
+            },
+        );
+        $validator = $this->validate(['name' => 'foo'], ['name' => [$rule]]);
+
+        Assert::false($validator->isValid());
+        Assert::same($validator->getErrors(), $validator->getErrors());
+        Assert::same($calls, 1);
+    }
+
     public function testWithContextDropsPreviousErrors(): void
     {
         $validator = $this->validate(['username' => ''], ['username' => [new Constraints\NotBlank()]], 'Default');
@@ -100,6 +117,7 @@ final class ValidatorTest extends TestCase
         $validator = $this->validate(['name' => 'foo', 'empty' => null, 'wrapped' => $value]);
 
         Assert::same($validator->getValue('name'), 'foo');
+        Assert::same($validator->getValue('name', 'default'), 'foo');
         Assert::same($validator->getValue('wrapped'), 'unwrapped');
         Assert::null($validator->getValue('missing'));
         Assert::same($validator->getValue('missing', 'default'), 'default');
