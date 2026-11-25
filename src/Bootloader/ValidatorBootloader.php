@@ -21,17 +21,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ValidatorBootloader extends Bootloader
 {
     protected const DEPENDENCIES = [
-        ValidationBootloader::class
+        ValidationBootloader::class,
     ];
-
     protected const SINGLETONS = [
         Validation::class => Validation::class,
         ValidatorInterface::class => [self::class, 'initSymfonyValidator'],
         ConstraintValidatorFactoryInterface::class => ContainerConstraintValidatorFactory::class,
     ];
-
     protected const BINDINGS = [
-        EmailValidator::class => [self::class, 'initEmailValidator']
+        EmailValidator::class => [self::class, 'initEmailValidator'],
     ];
 
     public function init(HttpBootloader $http): void
@@ -39,7 +37,7 @@ class ValidatorBootloader extends Bootloader
         $http->addInputBag('symfonyFiles', [
             'class'  => FilesBag::class,
             'source' => 'getUploadedFiles',
-            'alias' => 'symfony-file'
+            'alias' => 'symfony-file',
         ]);
     }
 
@@ -47,7 +45,7 @@ class ValidatorBootloader extends Bootloader
     {
         $provider->register(
             FilterDefinition::class,
-            static fn(Validation $validation): ValidationInterface => $validation
+            static fn(Validation $validation): ValidationInterface => $validation,
         );
         $validation->setDefaultValidator(FilterDefinition::class);
     }

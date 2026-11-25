@@ -17,8 +17,7 @@ final class File extends AbstractInput
      */
     public function __construct(
         public readonly ?string $key = null,
-    ) {
-    }
+    ) {}
 
     public function getValue(InputInterface $input, \ReflectionProperty $property): ?UploadedFile
     {

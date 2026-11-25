@@ -23,28 +23,6 @@ use Testo\Test;
 #[Test]
 final class ValidationTest extends TestCase
 {
-    #[DataProvider('requestsSuccessProvider')]
-    public function testValidationSuccess(string $filterClass, array $data, bool $withFile = false): void
-    {
-        $filter = $this->createFilter($filterClass, $this->createRequest($data, $withFile))->getData();
-
-        if ($withFile) {
-            Assert::instanceOf($filter['image'], SymfonyUploadedFile::class);
-            unset($filter['image']);
-        }
-
-        Assert::same($filter, $data);
-    }
-
-    #[DataProvider('requestsErrorProvider')]
-    public function testValidationError(string $filterClass, array $data, bool $withFile = false): void
-    {
-        $request = $this->createRequest($data, $withFile);
-        Expect::exception(ValidationException::class);
-
-        $this->createFilter($filterClass, $request);
-    }
-
     public static function requestsSuccessProvider(): \Traversable
     {
         yield [SimpleFilter::class, ['username' => 'foo', 'email' => 'foo@gmail.com']];
@@ -65,6 +43,28 @@ final class ValidationTest extends TestCase
         yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post', 'sort' => -1]];
         yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post']];
         yield [CreatePostFilter::class, ['title' => 'foo', 'slug' => 'foo', 'sort' => 1]];
+    }
+
+    #[DataProvider('requestsSuccessProvider')]
+    public function testValidationSuccess(string $filterClass, array $data, bool $withFile = false): void
+    {
+        $filter = $this->createFilter($filterClass, $this->createRequest($data, $withFile))->getData();
+
+        if ($withFile) {
+            Assert::instanceOf($filter['image'], SymfonyUploadedFile::class);
+            unset($filter['image']);
+        }
+
+        Assert::same($filter, $data);
+    }
+
+    #[DataProvider('requestsErrorProvider')]
+    public function testValidationError(string $filterClass, array $data, bool $withFile = false): void
+    {
+        $request = $this->createRequest($data, $withFile);
+        Expect::exception(ValidationException::class);
+
+        $this->createFilter($filterClass, $request);
     }
 
     /**
@@ -92,8 +92,8 @@ final class ValidationTest extends TestCase
                     fopen($path, 'rb'),
                     filesize($path),
                     0,
-                    $path
-                )
+                    $path,
+                ),
             ]);
         }
 

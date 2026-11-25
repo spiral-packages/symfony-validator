@@ -21,26 +21,13 @@ final class Validator implements ValidatorInterface
         private \Symfony\Component\Validator\Validator\ValidatorInterface $validator,
         private mixed $data,
         array $rules,
-        array|string|null $context = null
+        array|string|null $context = null,
     ) {
         if ($rules !== []) {
             $this->rules = new Constraints\Collection($rules);
         }
 
         $this->context = $context;
-        $this->errors = [];
-    }
-
-    /**
-     * Destruct the service.
-     */
-    public function __destruct()
-    {
-        $this->data = [];
-    }
-
-    public function __clone()
-    {
         $this->errors = [];
     }
 
@@ -52,9 +39,6 @@ final class Validator implements ValidatorInterface
         return $validator;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getValue(string $field, mixed $default = null): mixed
     {
         $value = $this->data[$field] ?? $default;
@@ -109,6 +93,19 @@ final class Validator implements ValidatorInterface
         return isset($this->getErrors()[$field]);
     }
 
+    public function __clone()
+    {
+        $this->errors = [];
+    }
+
+    /**
+     * Destruct the service.
+     */
+    public function __destruct()
+    {
+        $this->data = [];
+    }
+
     final protected function validate(): void
     {
         if ($this->errors !== []) {
@@ -124,7 +121,7 @@ final class Validator implements ValidatorInterface
         foreach ($violations as $violation) {
             $this->errors[$violation->getPropertyPath()][] = $this->say(
                 $violation->getMessageTemplate(),
-                $violation->getParameters()
+                $violation->getParameters(),
             );
         }
     }
