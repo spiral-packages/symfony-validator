@@ -27,6 +27,7 @@
         "spiral/http": "^3.1"
     },
     "require-dev": {
+        "buggregator/trap": "^1.13",
         "mockery/mockery": "^1.5",
         "phpunit/phpunit": "^9.5",
         "spiral/framework": "^3.1",
