@@ -8,11 +8,13 @@ use Nyholm\Psr7\UploadedFile;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Spiral\Core\Attribute;
 use Spiral\Core\Scope;
 use Spiral\Filters\Exception\ValidationException;
 use Spiral\Filters\Model\FilterBag;
 use Spiral\Filters\Model\FilterInterface;
 use Spiral\Framework\Spiral;
+use Spiral\Http\Request\InputManager;
 use Spiral\Models\DataEntity;
 use Spiral\Validation\Symfony\Tests\App\Filters\CreatePostFilter;
 use Spiral\Validation\Symfony\Tests\App\Filters\FilterWithArrayMapping;
@@ -117,11 +119,15 @@ final class ValidationTest extends TestCase
 
     /**
      * Resolves the filter inside the request scope: the filter input is bound only there.
+     * Before spiral/framework 3.15 InputManager is not scoped and reads the request from a plain scope binding.
      */
     private function createFilter(string $filterClass, ServerRequestInterface $request): object
     {
+        $bindings = [ServerRequestInterface::class => $request];
+        $scoped = (new \ReflectionClass(InputManager::class))->getAttributes(Attribute\Scope::class) !== [];
+
         return $this->getContainer()->runScope(
-            new Scope(Spiral::HttpRequest, [ServerRequestInterface::class => $request]),
+            $scoped ? new Scope(Spiral::HttpRequest, $bindings) : $bindings,
             static fn(ContainerInterface $container): object => $container->get($filterClass),
         );
     }

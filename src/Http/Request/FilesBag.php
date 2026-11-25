@@ -9,6 +9,10 @@ use Symfony\Bridge\PsrHttpMessage\Factory\UploadedFile;
 
 final class FilesBag extends InputBag
 {
+    /**
+     * @psalm-suppress MixedAssignment, MixedArgument Bug: a nested tree from getUploadedFiles() (e.g. `files[]`)
+     *     reaches UploadedFile as an array and fails with a TypeError; only a flat list of files is supported.
+     */
     public function __construct(array $data, string $prefix = '')
     {
         foreach ($data as $name => $file) {
@@ -20,6 +24,9 @@ final class FilesBag extends InputBag
 
     /**
      * Gets a temporary file path.
+     *
+     * @psalm-suppress FalsableReturnStatement, InvalidFalsableReturnType tempnam() returns false only when the
+     *     system temp directory is unusable; the resulting TypeError is the existing failure mode.
      */
     protected function getTemporaryPath(): string
     {

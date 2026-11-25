@@ -14,11 +14,13 @@ class FilterDefinition implements FilterDefinitionInterface, ShouldBeValidated
         private readonly array $mappingSchema = [],
     ) {}
 
+    #[\Override]
     public function mappingSchema(): array
     {
         return $this->mappingSchema;
     }
 
+    #[\Override]
     public function validationRules(): array
     {
         return $this->validationRules;

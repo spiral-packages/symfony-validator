@@ -13,10 +13,15 @@ final class Validator implements ValidatorInterface
 {
     use TranslatorTrait;
 
+    /** @var array<string, list<string>> */
     private array $errors;
+
     private array|string|null $context;
     private ?Constraints\Collection $rules = null;
 
+    /**
+     * @psalm-suppress MixedArgumentTypeCoercion Symfony's Collection checks the rule types itself and throws on invalid ones.
+     */
     public function __construct(
         private \Symfony\Component\Validator\Validator\ValidatorInterface $validator,
         private mixed $data,
@@ -31,6 +36,7 @@ final class Validator implements ValidatorInterface
         $this->errors = [];
     }
 
+    #[\Override]
     public function withData(mixed $data): ValidatorInterface
     {
         $validator = clone $this;
@@ -39,6 +45,10 @@ final class Validator implements ValidatorInterface
         return $validator;
     }
 
+    /**
+     * @psalm-suppress MixedAssignment, MixedArrayAccess Bug: object data (a filter) is read as an array and fails.
+     */
+    #[\Override]
     public function getValue(string $field, mixed $default = null): mixed
     {
         $value = $this->data[$field] ?? $default;
@@ -50,6 +60,7 @@ final class Validator implements ValidatorInterface
         return $value;
     }
 
+    #[\Override]
     public function hasValue(string $field): bool
     {
         if (is_array($this->data)) {
@@ -59,6 +70,10 @@ final class Validator implements ValidatorInterface
         return isset($this->data[$field]);
     }
 
+    /**
+     * @psalm-suppress MixedAssignment Bug: a context that is not validation groups (e.g. an object) fails with a TypeError.
+     */
+    #[\Override]
     public function withContext(mixed $context): ValidatorInterface
     {
         $validator = clone $this;
@@ -68,16 +83,23 @@ final class Validator implements ValidatorInterface
         return $validator;
     }
 
+    #[\Override]
     public function getContext(): mixed
     {
         return $this->context;
     }
 
+    #[\Override]
     public function isValid(): bool
     {
         return $this->getErrors() === [];
     }
 
+    /**
+     * @psalm-suppress InvalidReturnStatement, InvalidReturnType Bug: each field holds a list of messages,
+     *     while the interface promises a single message per field.
+     */
+    #[\Override]
     public function getErrors(): array
     {
         $this->validate();
@@ -115,6 +137,7 @@ final class Validator implements ValidatorInterface
 
         $this->errors = [];
 
+        /** @psalm-suppress MixedArgumentTypeCoercion The context is passed as validation groups unchecked. */
         /** @var ConstraintViolationInterface[] $violations */
         $violations = $this->validator->validate($this->data, $this->rules, $this->context);
 

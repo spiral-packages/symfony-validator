@@ -16,6 +16,10 @@ class Validation implements ValidationInterface
         private readonly SymfonyValidatorInterface $validator,
     ) {}
 
+    /**
+     * @psalm-suppress MixedArgument Bug: a context that is not validation groups (e.g. an object) fails with a TypeError.
+     */
+    #[\Override]
     public function validate(mixed $data, array $rules, $context = null): ValidatorInterface
     {
         if ($data instanceof FilterBag) {
