@@ -45,6 +45,7 @@
         "roxblnfk/unpoly": "^1.8",
         "spiral/framework": "^3.15",
         "spiral/nyholm-bridge": "^1.2",
+        "testo/bridge-infection": "^0.1.9",
         "testo/testo": "^0.10.55",
         "vimeo/psalm": "^6 || ^7"
     },
@@ -62,6 +63,14 @@
     "scripts": {
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff --config=vendor-bin/code-style/.php-cs-fixer.dist.php",
         "cs:fix": "php-cs-fixer fix -v --config=vendor-bin/code-style/.php-cs-fixer.dist.php",
+        "infect": [
+            "@putenv XDEBUG_MODE=coverage",
+            "infection --threads=max --min-msi=100 --min-covered-msi=100"
+        ],
+        "infect:ci": [
+            "@putenv XDEBUG_MODE=coverage",
+            "infection --ansi --threads=max --logger-github --show-mutations=0 --min-msi=100 --min-covered-msi=100"
+        ],
         "test": "vendor/bin/testo",
         "psalm": "vendor/bin/psalm --config=psalm.xml ./src"
     },
