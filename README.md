@@ -2,7 +2,7 @@
 
 [![PHP Version Require](https://poser.pugx.org/spiral-packages/symfony-validator/require/php)](https://packagist.org/packages/spiral-packages/symfony-validator)
 [![Latest Stable Version](https://poser.pugx.org/spiral-packages/symfony-validator/v/stable)](https://packagist.org/packages/spiral-packages/symfony-validator)
-[![phpunit](https://github.com/spiral-packages/symfony-validator/actions/workflows/phpunit.yml/badge.svg)](https://github.com/spiral-packages/symfony-validator/actions)
+[![testo](https://github.com/spiral-packages/symfony-validator/actions/workflows/testo.yml/badge.svg)](https://github.com/spiral-packages/symfony-validator/actions/workflows/testo.yml)
 [![psalm](https://github.com/spiral-packages/symfony-validator/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/spiral-packages/symfony-validator/actions)
 [![Codecov](https://codecov.io/gh/spiral-packages/symfony-validator/branch/master/graph/badge.svg)](https://codecov.io/gh/spiral-packages/symfony-validator)
 [![Total Downloads](https://poser.pugx.org/spiral-packages/symfony-validator/downloads)](https://packagist.org/packages/spiral-packages/symfony-validator)

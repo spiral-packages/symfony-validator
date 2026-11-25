@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\Functional\Bootloader;
 
+use Spiral\Boot\BootloadManagerInterface;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Spiral\Validation\Symfony\Tests\Functional\TestCase;
 use Spiral\Validation\Symfony\Validation;
@@ -16,19 +17,25 @@ use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
 use Symfony\Component\Validator\ContainerConstraintValidatorFactory;
 use Symfony\Component\Validator\Validator\RecursiveValidator;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Testo\Assert;
+use Testo\Test;
 
+#[Test]
 final class ValidatorBootloaderTest extends TestCase
 {
     public function testBootloaderRegistered(): void
     {
-        $this->assertBootloaderRegistered(ValidatorBootloader::class);
+        Assert::contains(
+            $this->getContainer()->get(BootloadManagerInterface::class)->getClasses(),
+            ValidatorBootloader::class,
+        );
     }
 
     public function testValidationRegistered(): void
     {
         $provider = $this->getContainer()->get(ValidationProviderInterface::class);
 
-        $this->assertInstanceOf(Validation::class, $provider->getValidation(FilterDefinition::class));
+        Assert::instanceOf($provider->getValidation(FilterDefinition::class), Validation::class);
         $this->assertContainerBoundAsSingleton(ValidationInterface::class, Validation::class);
     }
 
@@ -45,10 +52,10 @@ final class ValidatorBootloaderTest extends TestCase
         $factory = $this->getContainer()->get(ConstraintValidatorFactoryInterface::class);
         $validator = $factory->getInstance(new Email());
 
-        $this->assertInstanceOf(EmailValidator::class, $validator);
-        $this->assertSame(
+        Assert::instanceOf($validator, EmailValidator::class);
+        Assert::same(
+            (new \ReflectionProperty($validator, 'defaultMode'))->getValue($validator),
             Email::VALIDATION_MODE_HTML5,
-            (new \ReflectionProperty($validator, 'defaultMode'))->getValue($validator)
         );
     }
 

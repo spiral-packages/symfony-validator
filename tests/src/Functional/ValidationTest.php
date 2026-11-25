@@ -5,48 +5,54 @@ declare(strict_types=1);
 namespace Spiral\Validation\Symfony\Tests\Functional;
 
 use Nyholm\Psr7\UploadedFile;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Spiral\Core\Scope;
 use Spiral\Filters\Exception\ValidationException;
+use Spiral\Framework\Spiral;
 use Spiral\Validation\Symfony\Tests\App\Filters\CreatePostFilter;
 use Spiral\Validation\Symfony\Tests\App\Filters\FilterWithArrayMapping;
 use Spiral\Validation\Symfony\Tests\App\Filters\SimpleFilter;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Expect;
+use Testo\Test;
 
+#[Test]
 final class ValidationTest extends TestCase
 {
-    /** @dataProvider requestsSuccessProvider */
+    #[DataProvider('requestsSuccessProvider')]
     public function testValidationSuccess(string $filterClass, array $data, bool $withFile = false): void
     {
-        $this->getContainer()->bind(ServerRequestInterface::class, $this->createRequest($data, $withFile));
-
-        $filter = $this->getContainer()->get($filterClass)->getData();
+        $filter = $this->createFilter($filterClass, $this->createRequest($data, $withFile))->getData();
 
         if ($withFile) {
-            $this->assertInstanceOf(SymfonyUploadedFile::class, $filter['image']);
+            Assert::instanceOf($filter['image'], SymfonyUploadedFile::class);
             unset($filter['image']);
         }
 
-        $this->assertSame($data, $filter);
+        Assert::same($filter, $data);
     }
 
-    /** @dataProvider requestsErrorProvider */
+    #[DataProvider('requestsErrorProvider')]
     public function testValidationError(string $filterClass, array $data, bool $withFile = false): void
     {
-        $this->getContainer()->bind(ServerRequestInterface::class, $this->createRequest($data, $withFile));
-        $this->expectException(ValidationException::class);
+        $request = $this->createRequest($data, $withFile);
+        Expect::exception(ValidationException::class);
 
-        $this->getContainer()->get($filterClass);
+        $this->createFilter($filterClass, $request);
     }
 
-    public function requestsSuccessProvider(): \Traversable
+    public static function requestsSuccessProvider(): \Traversable
     {
         yield [SimpleFilter::class, ['username' => 'foo', 'email' => 'foo@gmail.com']];
         yield [FilterWithArrayMapping::class, ['username' => 'foo', 'email' => 'foo@gmail.com'], true];
         yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post', 'sort' => 1], true];
     }
 
-    public function requestsErrorProvider(): \Traversable
+    public static function requestsErrorProvider(): \Traversable
     {
         yield [SimpleFilter::class, ['email' => 'foo@gmail.com']];
         yield [SimpleFilter::class, ['username' => 'foo']];
@@ -59,6 +65,17 @@ final class ValidationTest extends TestCase
         yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post', 'sort' => -1]];
         yield [CreatePostFilter::class, ['title' => 'New post', 'slug' => 'new-post']];
         yield [CreatePostFilter::class, ['title' => 'foo', 'slug' => 'foo', 'sort' => 1]];
+    }
+
+    /**
+     * Resolves the filter inside the request scope: the filter input is bound only there.
+     */
+    private function createFilter(string $filterClass, ServerRequestInterface $request): object
+    {
+        return $this->getContainer()->runScope(
+            new Scope(Spiral::HttpRequest, [ServerRequestInterface::class => $request]),
+            static fn(ContainerInterface $container): object => $container->get($filterClass),
+        );
     }
 
     private function createRequest(array $data, bool $withFile = false): ServerRequestInterface

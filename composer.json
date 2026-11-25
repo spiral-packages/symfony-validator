@@ -28,12 +28,10 @@
     },
     "require-dev": {
         "buggregator/trap": "^1.13",
-        "mockery/mockery": "^1.5",
-        "phpunit/phpunit": "^9.5",
-        "spiral/framework": "^3.1",
-        "spiral/testing": "^2.0",
-        "vimeo/psalm": "^4.9",
-        "spiral/nyholm-bridge": "^1.2"
+        "spiral/framework": "^3.15",
+        "spiral/nyholm-bridge": "^1.2",
+        "testo/testo": "^0.10.55",
+        "vimeo/psalm": "^6 || ^7"
     },
     "autoload": {
         "psr-4": {
@@ -47,7 +45,7 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/phpunit",
+        "test": "vendor/bin/testo",
         "psalm": "vendor/bin/psalm --config=psalm.xml ./src"
     },
     "config": {

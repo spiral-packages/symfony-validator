@@ -4,27 +4,51 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\Functional;
 
-use Spiral\Bootloader\Attributes\AttributesBootloader;
-use Spiral\Bootloader\Security\FiltersBootloader;
-use Spiral\Nyholm\Bootloader\NyholmBootloader;
-use Spiral\Validation\Bootloader\ValidationBootloader;
-use Spiral\Validation\Symfony\Bootloader\ValidatorBootloader;
+use Spiral\Core\Container;
+use Spiral\Validation\Symfony\Tests\App\TestKernel;
+use Testo\Assert;
+use Testo\Lifecycle\BeforeTest;
 
-abstract class TestCase extends \Spiral\Testing\TestCase
+/**
+ * Boots a fresh application before each test.
+ */
+abstract class TestCase
 {
-    public function rootDirectory(): string
+    private ?TestKernel $app = null;
+
+    #[BeforeTest]
+    protected function bootApplication(): void
     {
-        return __DIR__ . '/../';
+        $root = \dirname(__DIR__, 2);
+
+        $this->app = TestKernel::create(
+            directories: [
+                'root' => $root,
+                'app' => $root . '/app',
+                'runtime' => $root . '/runtime',
+                'cache' => $root . '/runtime/cache',
+            ],
+            handleErrors: false,
+        );
+        $this->app->run();
     }
 
-    public function defineBootloaders(): array
+    protected function getContainer(): Container
     {
-        return [
-            AttributesBootloader::class,
-            NyholmBootloader::class,
-            FiltersBootloader::class,
-            ValidationBootloader::class,
-            ValidatorBootloader::class,
-        ];
+        return ($this->app ?? throw new \LogicException('The application is not booted.'))->getContainer();
+    }
+
+    /**
+     * @param class-string $alias
+     * @param class-string $class
+     */
+    protected function assertContainerBoundAsSingleton(string $alias, string $class): void
+    {
+        $container = $this->getContainer();
+
+        Assert::true($container->has($alias), \sprintf('Container [%s] is not bound.', $alias));
+        $instance = $container->get($alias);
+        Assert::instanceOf($instance, $class);
+        Assert::same($container->get($alias), $instance, \sprintf('Container [%s] is not a singleton.', $alias));
     }
 }
