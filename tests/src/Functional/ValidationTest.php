@@ -10,11 +10,16 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Spiral\Core\Scope;
 use Spiral\Filters\Exception\ValidationException;
+use Spiral\Filters\Model\FilterBag;
+use Spiral\Filters\Model\FilterInterface;
 use Spiral\Framework\Spiral;
+use Spiral\Models\DataEntity;
 use Spiral\Validation\Symfony\Tests\App\Filters\CreatePostFilter;
 use Spiral\Validation\Symfony\Tests\App\Filters\FilterWithArrayMapping;
 use Spiral\Validation\Symfony\Tests\App\Filters\SimpleFilter;
+use Spiral\Validation\Symfony\Validation;
 use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
+use Symfony\Component\Validator\Constraints;
 use Testo\Assert;
 use Testo\Data\DataProvider;
 use Testo\Expect;
@@ -65,6 +70,49 @@ final class ValidationTest extends TestCase
         Expect::exception(ValidationException::class);
 
         $this->createFilter($filterClass, $request);
+    }
+
+    public function testFilterBagWithAttributesFilterValidatesTheFilterObject(): void
+    {
+        $filter = new SimpleFilter();
+        $filter->username = 'foo';
+        $filter->email = 'foo';
+
+        $validator = $this->getValidation()->validate(new FilterBag($filter, new DataEntity()), []);
+
+        Assert::same($validator->getErrors(), ['email' => ['This value is not a valid email address.']]);
+    }
+
+    public function testFilterBagWithFilterValidatesFilterData(): void
+    {
+        $filter = new FilterWithArrayMapping();
+        $filter->setData(['email' => 'foo@gmail.com']);
+
+        $validator = $this->getValidation()->validate(
+            new FilterBag($filter, new DataEntity(['email' => 'foo'])),
+            ['email' => [new Constraints\Email()]],
+        );
+
+        Assert::true($validator->isValid());
+        Assert::same($validator->getValue('email'), 'foo@gmail.com');
+    }
+
+    public function testFilterBagWithCustomFilterValidatesEntityData(): void
+    {
+        $filter = new class implements FilterInterface {};
+
+        $validator = $this->getValidation()->validate(
+            new FilterBag($filter, new DataEntity(['email' => 'foo'])),
+            ['email' => [new Constraints\Email()]],
+        );
+
+        Assert::false($validator->isValid());
+        Assert::same($validator->getValue('email'), 'foo');
+    }
+
+    private function getValidation(): Validation
+    {
+        return $this->getContainer()->get(Validation::class);
     }
 
     /**
