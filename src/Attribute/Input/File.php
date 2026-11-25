@@ -9,6 +9,9 @@ use Spiral\Filters\Attribute\Input\AbstractInput;
 use Spiral\Filters\InputInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\UploadedFile;
 
+/**
+ * @psalm-suppress DeprecatedClass spiral/attributes 2.x needs NamedArgumentConstructor to pass the arguments by name.
+ */
 #[\Attribute(\Attribute::TARGET_PROPERTY), NamedArgumentConstructor]
 final class File extends AbstractInput
 {
@@ -19,11 +22,16 @@ final class File extends AbstractInput
         public readonly ?string $key = null,
     ) {}
 
+    #[\Override]
     public function getValue(InputInterface $input, \ReflectionProperty $property): ?UploadedFile
     {
-        return $input->getValue('symfony-file', $this->getKey($property));
+        /** @var UploadedFile|null $file */
+        $file = $input->getValue('symfony-file', $this->getKey($property));
+
+        return $file;
     }
 
+    #[\Override]
     public function getSchema(\ReflectionProperty $property): string
     {
         return 'symfony-file:' . $this->getKey($property);

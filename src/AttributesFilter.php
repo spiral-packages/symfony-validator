@@ -10,6 +10,7 @@ use Spiral\Filters\Model\HasFilterDefinition;
 
 class AttributesFilter extends Filter implements HasFilterDefinition
 {
+    #[\Override]
     public function filterDefinition(): FilterDefinitionInterface
     {
         return new FilterDefinition();
