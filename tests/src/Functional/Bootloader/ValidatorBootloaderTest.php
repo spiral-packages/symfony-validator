@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Spiral\Validation\Symfony\Tests\Functional\Bootloader;
 
 use Spiral\Boot\BootloadManagerInterface;
+use Spiral\Validation\Symfony\Bootloader\ValidatorBootloader;
 use Spiral\Validation\Symfony\FilterDefinition;
 use Spiral\Validation\Symfony\Tests\Functional\TestCase;
 use Spiral\Validation\Symfony\Validation;
 use Spiral\Validation\ValidationInterface;
 use Spiral\Validation\ValidationProviderInterface;
-use Spiral\Validation\Symfony\Bootloader\ValidatorBootloader;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\EmailValidator;
 use Symfony\Component\Validator\ConstraintValidatorFactoryInterface;
@@ -43,7 +43,7 @@ final class ValidatorBootloaderTest extends TestCase
     {
         $this->assertContainerBoundAsSingleton(
             ConstraintValidatorFactoryInterface::class,
-            ContainerConstraintValidatorFactory::class
+            ContainerConstraintValidatorFactory::class,
         );
     }
 
