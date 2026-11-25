@@ -10,7 +10,11 @@ return new ApplicationConfig(
     suites: [
         new SuiteConfig(
             name: 'Functional',
-            location: ['tests/src'],
+            location: ['tests/src/Functional'],
+        ),
+        new SuiteConfig(
+            name: 'Acceptance',
+            location: ['tests/src/Acceptance'],
         ),
     ],
 );

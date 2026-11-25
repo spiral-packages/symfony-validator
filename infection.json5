@@ -4,6 +4,8 @@
         "directories": ["src"]
     },
     "testFramework": "testo",
+    // The acceptance suite runs the application in a separate process, out of reach of mutants and coverage.
+    "testFrameworkOptions": "--suite=Functional",
     "tmpDir": "runtime",
     "timeout": 10,
     "logs": {
