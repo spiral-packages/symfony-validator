@@ -35,7 +35,7 @@
         "spiral/http": "^3.1",
         "spiral/validation": "^3.1",
         "symfony/cache": "^6.4 || ^7.0 || ^8.0",
-        "symfony/psr-http-message-bridge": "^2 || ^6.4 || ^7.0 || ^8.0",
+        "symfony/psr-http-message-bridge": "^6.4 || ^7.0 || ^8.0",
         "symfony/validator": "^6.4 || ^7.0 || ^8.0"
     },
     "require-dev": {
