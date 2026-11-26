@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Http\Request;
 
+use Psr\Http\Message\UploadedFileInterface;
 use Spiral\Http\Request\InputBag;
 use Symfony\Bridge\PsrHttpMessage\Factory\UploadedFile;
 
 final class FilesBag extends InputBag
 {
-    /**
-     * @psalm-suppress MixedAssignment, MixedArgument Bug: a nested tree from getUploadedFiles() (e.g. `files[]`)
-     *     reaches UploadedFile as an array and fails with a TypeError; only a flat list of files is supported.
-     */
     public function __construct(array $data, string $prefix = '')
     {
-        foreach ($data as $name => $file) {
-            $data[$name] = new UploadedFile($file, fn(): string => $this->getTemporaryPath());
-        }
-
-        parent::__construct($data, $prefix);
+        parent::__construct($this->wrapFiles($data), $prefix);
     }
 
     /**
@@ -31,5 +24,18 @@ final class FilesBag extends InputBag
     protected function getTemporaryPath(): string
     {
         return \tempnam(\sys_get_temp_dir(), \uniqid('symfony', true));
+    }
+
+    /**
+     * Wraps every file of the uploaded-files tree, keeping nested arrays (e.g. `files[]`) as arrays.
+     */
+    private function wrapFiles(array $files): array
+    {
+        return \array_map(
+            fn(UploadedFileInterface|array $file): UploadedFile|array => \is_array($file)
+                ? $this->wrapFiles($file)
+                : new UploadedFile($file, fn(): string => $this->getTemporaryPath()),
+            $files,
+        );
     }
 }
