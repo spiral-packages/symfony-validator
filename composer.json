@@ -46,6 +46,7 @@
         "roxblnfk/unpoly": "^1.8",
         "spiral/framework": "^3.12",
         "spiral/nyholm-bridge": "^1.2",
+        "spiral/testing": "^4",
         "testo/bridge-infection": "^0.1.9",
         "testo/testo": "^0.10.55"
     },

@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Spiral\Validation\Symfony\Tests\Functional;
 
 use Nyholm\Psr7\UploadedFile;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Spiral\Core\Attribute;
-use Spiral\Core\Scope;
 use Spiral\Filters\Exception\ValidationException;
 use Spiral\Filters\Model\FilterBag;
 use Spiral\Filters\Model\FilterInterface;
 use Spiral\Framework\Spiral;
-use Spiral\Http\Request\InputManager;
 use Spiral\Models\DataEntity;
+use Spiral\Testing\Attribute\TestScope;
 use Spiral\Validation\Symfony\Tests\App\Filters\CreatePostFilter;
 use Spiral\Validation\Symfony\Tests\App\Filters\FilterWithArrayMapping;
 use Spiral\Validation\Symfony\Tests\App\Filters\SimpleFilter;
@@ -53,6 +50,7 @@ final class ValidationTest extends TestCase
     }
 
     #[DataProvider('requestsSuccessProvider')]
+    #[TestScope(Spiral::HttpRequest)]
     public function testValidationSuccess(string $filterClass, array $data, bool $withFile = false): void
     {
         $filter = $this->createFilter($filterClass, $this->createRequest($data, $withFile))->getData();
@@ -66,6 +64,7 @@ final class ValidationTest extends TestCase
     }
 
     #[DataProvider('requestsErrorProvider')]
+    #[TestScope(Spiral::HttpRequest)]
     public function testValidationError(string $filterClass, array $data, bool $withFile = false): void
     {
         $request = $this->createRequest($data, $withFile);
@@ -118,18 +117,14 @@ final class ValidationTest extends TestCase
     }
 
     /**
-     * Resolves the filter inside the request scope: the filter input is bound only there.
-     * Before spiral/framework 3.15 InputManager is not scoped and reads the request from a plain scope binding.
+     * Must run inside the request scope: the filter input is bound only there.
      */
     private function createFilter(string $filterClass, ServerRequestInterface $request): object
     {
-        $bindings = [ServerRequestInterface::class => $request];
-        $scoped = (new \ReflectionClass(InputManager::class))->getAttributes(Attribute\Scope::class) !== [];
+        $container = $this->getContainer();
+        $container->bindSingleton(ServerRequestInterface::class, $request);
 
-        return $this->getContainer()->runScope(
-            $scoped ? new Scope(Spiral::HttpRequest, $bindings) : $bindings,
-            static fn(ContainerInterface $container): object => $container->get($filterClass),
-        );
+        return $container->get($filterClass);
     }
 
     private function createRequest(array $data, bool $withFile = false): ServerRequestInterface
