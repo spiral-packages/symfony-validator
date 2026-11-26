@@ -34,6 +34,14 @@ final class NonConsumingUploadedFileTest
         $file->getStream();
     }
 
+    public function testUnwritableTargetFails(): void
+    {
+        $file = new NonConsumingUploadedFile(new UploadedFile(Stream::create('content'), 7, \UPLOAD_ERR_OK));
+        Expect::exception(\RuntimeException::class);
+
+        $file->moveTo(\sys_get_temp_dir() . '/missing-' . \uniqid() . '/file');
+    }
+
     public function testLocalFileIsCopiedToOtherTarget(): void
     {
         $source = self::temporaryFile('content');

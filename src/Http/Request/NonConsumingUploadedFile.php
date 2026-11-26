@@ -62,10 +62,12 @@ final class NonConsumingUploadedFile implements UploadedFileInterface
         $position = $stream->isSeekable() ? $stream->tell() : null;
         $position === null or $stream->rewind();
 
-        $target = new \SplFileObject($targetPath, 'wb');
+        // Not SplFileObject: on PHP 8.2 it leaves a stale stat cache, and the copy then looks empty.
+        $target = @\fopen($targetPath, 'wb') ?: throw new \RuntimeException(\sprintf('Cannot write to "%s".', $targetPath));
         while (!$stream->eof()) {
-            $target->fwrite($stream->read(1048576));
+            \fwrite($target, $stream->read(1048576));
         }
+        \fclose($target);
 
         // Whoever reads the PSR stream later starts where they left off.
         $position === null or $stream->seek($position);
