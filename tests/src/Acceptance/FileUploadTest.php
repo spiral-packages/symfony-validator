@@ -6,7 +6,6 @@ namespace Spiral\Validation\Symfony\Tests\Acceptance;
 
 use Spiral\Validation\Symfony\Tests\Acceptance\Support\ServesApp;
 use Testo\Assert;
-use Testo\Skip;
 use Testo\Test;
 
 /**
@@ -61,7 +60,6 @@ final class FileUploadTest
         Assert::array(self::assertRejected($response))->sameElementsAs(['title', 'sort']);
     }
 
-    #[Skip('Bug: FilesBag passes the nested array of a "files[]" upload to UploadedFile, which fails with a TypeError')]
     public function testNestedUploadInSameRequestDoesNotBreakValidation(): void
     {
         $response = self::server()->post('/post', self::FIELDS, [self::image(), self::textFile('attachments[]')]);
