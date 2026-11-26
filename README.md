@@ -11,8 +11,8 @@
 
 [![Psalm Level](https://shepherd.dev/github/spiral-packages/symfony-validator/level.svg)](https://shepherd.dev/github/spiral-packages/symfony-validator)
 [![Type Coverage](https://shepherd.dev/github/spiral-packages/symfony-validator/coverage.svg)](https://shepherd.dev/github/spiral-packages/symfony-validator)
-[![Codecov](https://codecov.io/gh/spiral-packages/symfony-validator/branch/master/graph/badge.svg)](https://codecov.io/gh/spiral-packages/symfony-validator)
-[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fspiral-packages%2Fsymfony-validator%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/spiral-packages/symfony-validator/master)
+[![Codecov](https://codecov.io/gh/spiral-packages/symfony-validator/branch/1.x/graph/badge.svg)](https://codecov.io/gh/spiral-packages/symfony-validator)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fspiral-packages%2Fsymfony-validator%2F1.x)](https://dashboard.stryker-mutator.io/reports/github.com/spiral-packages/symfony-validator/1.x)
 
 </div>
 

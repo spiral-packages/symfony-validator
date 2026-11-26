@@ -12,7 +12,7 @@
         "text": "runtime/infection.log",
         "github": true,
         "stryker": {
-            "report": "master"
+            "report": "1.x"
         }
     }
 }
