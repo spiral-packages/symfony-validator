@@ -150,16 +150,49 @@ final class ValidatorTest extends TestCase
         Assert::true($validator->hasError('email'));
     }
 
-    #[Skip('Bug: getValue() and hasValue() read the data as an array and fail on a filter object')]
     public function testValueOfObjectData(): void
     {
         $filter = new SimpleFilter();
         $filter->username = 'foo';
+        $filter->setData(['username' => 'raw']);
 
         $validator = $this->validate($filter);
 
         Assert::true($validator->hasValue('username'));
         Assert::same($validator->getValue('username'), 'foo');
+        Assert::same($validator->getValue('username', 'default'), 'foo');
+
+        // `email` is left uninitialized; `data` is a private property of the base Filter.
+        Assert::false($validator->hasValue('email'));
+        Assert::same($validator->getValue('email', 'default'), 'default');
+        Assert::false($validator->hasValue('data'));
+        Assert::null($validator->getValue('data'));
+        Assert::false($validator->hasValue('missing'));
+        Assert::same($validator->getValue('missing', 'default'), 'default');
+    }
+
+    public function testValueOfPlainObjectData(): void
+    {
+        $data = new class {
+            public ?string $empty = null;
+            public object $wrapped;
+
+            public function __construct()
+            {
+                $this->wrapped = new class {
+                    public function getValue(): string
+                    {
+                        return 'unwrapped';
+                    }
+                };
+            }
+        };
+
+        $validator = $this->validate($data);
+
+        Assert::true($validator->hasValue('empty'));
+        Assert::same($validator->getValue('empty', 'default'), 'default');
+        Assert::same($validator->getValue('wrapped'), 'unwrapped');
     }
 
     #[Skip('Bug: messages keep Symfony placeholders and plural variants, e.g. "{{ limit }} character or more.|..."')]
