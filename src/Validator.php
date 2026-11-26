@@ -45,29 +45,16 @@ final class Validator implements ValidatorInterface
         return $validator;
     }
 
-    /**
-     * @psalm-suppress MixedAssignment, MixedArrayAccess Bug: object data (a filter) is read as an array and fails.
-     */
     #[\Override]
     public function getValue(string $field, mixed $default = null): mixed
     {
-        $value = $this->data[$field] ?? $default;
-
-        if (is_object($value) && method_exists($value, 'getValue')) {
-            return $value->getValue();
-        }
-
-        return $value;
+        return $this->unwrap($this->fields()[$field] ?? $default);
     }
 
     #[\Override]
     public function hasValue(string $field): bool
     {
-        if (is_array($this->data)) {
-            return array_key_exists($field, $this->data);
-        }
-
-        return isset($this->data[$field]);
+        return self::hasField($this->fields(), $field);
     }
 
     /**
@@ -147,5 +134,36 @@ final class Validator implements ValidatorInterface
                 $violation->getParameters(),
             );
         }
+    }
+
+    private static function hasField(mixed $fields, string $field): bool
+    {
+        if (is_array($fields)) {
+            return array_key_exists($field, $fields);
+        }
+
+        return isset($fields[$field]);
+    }
+
+    /**
+     * Object data other than {@see \ArrayAccess} (e.g. an {@see AttributesFilter}) is read through its public
+     * properties; an uninitialized typed property counts as missing.
+     */
+    private function fields(): mixed
+    {
+        if (is_object($this->data) && !$this->data instanceof \ArrayAccess) {
+            return get_object_vars($this->data);
+        }
+
+        return $this->data;
+    }
+
+    private function unwrap(mixed $value): mixed
+    {
+        if (is_object($value) && method_exists($value, 'getValue')) {
+            return $value->getValue();
+        }
+
+        return $value;
     }
 }
