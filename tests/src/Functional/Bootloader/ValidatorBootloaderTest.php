@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\Functional\Bootloader;
 
-use Spiral\Boot\BootloadManagerInterface;
+use Spiral\Http\Config\HttpConfig;
 use Spiral\Validation\Symfony\Bootloader\ValidatorBootloader;
 use Spiral\Validation\Symfony\FilterDefinition;
+use Spiral\Validation\Symfony\Http\Request\FilesBag;
 use Spiral\Validation\Symfony\Tests\Functional\TestCase;
 use Spiral\Validation\Symfony\Validation;
 use Spiral\Validation\ValidationInterface;
@@ -25,18 +26,28 @@ final class ValidatorBootloaderTest extends TestCase
 {
     public function testBootloaderRegistered(): void
     {
-        Assert::contains(
-            $this->getContainer()->get(BootloadManagerInterface::class)->getClasses(),
-            ValidatorBootloader::class,
-        );
+        $this->assertBootloaderRegistered(ValidatorBootloader::class);
     }
 
     public function testValidationRegistered(): void
     {
+        # The app the test runs on boots outside the coverage window: boot again to cover the bootloader.
+        $this->initApp();
         $provider = $this->getContainer()->get(ValidationProviderInterface::class);
 
         Assert::instanceOf($provider->getValidation(FilterDefinition::class), Validation::class);
         $this->assertContainerBoundAsSingleton(ValidationInterface::class, Validation::class);
+    }
+
+    public function testSymfonyFilesInputBagRegistered(): void
+    {
+        # The app the test runs on boots outside the coverage window: boot again to cover the bootloader.
+        $this->initApp();
+
+        Assert::same(
+            $this->getConfig(HttpConfig::CONFIG)['inputBags']['symfonyFiles'] ?? null,
+            ['class' => FilesBag::class, 'source' => 'getUploadedFiles', 'alias' => 'symfony-file'],
+        );
     }
 
     public function testConstraintValidatorFactoryShouldBeBoundAsSingleton(): void
