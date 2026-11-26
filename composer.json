@@ -44,6 +44,7 @@
         "llm/skills": "^1.23",
         "nyholm/psr7-server": "^1.1",
         "roxblnfk/unpoly": "^1.8",
+        "spiral/composer-publish-plugin": "^1.1.2",
         "spiral/framework": "^3.12",
         "spiral/nyholm-bridge": "^1.2",
         "spiral/testing": "^4",
