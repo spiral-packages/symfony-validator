@@ -82,6 +82,47 @@ final class ValidatorTest extends TestCase
         Assert::null($validator->getContext());
     }
 
+    public function testObjectContextValidatesDefaultGroup(): void
+    {
+        // An iterable object, so that iterating it as a list of groups would select "strict".
+        $context = (object) ['group' => 'strict'];
+        $validator = $this->validate(['name' => '', 'email' => 'foo'], self::groupedRules(), $context);
+
+        Assert::same($validator->getContext(), $context);
+        Assert::same(\array_keys($validator->getErrors()), ['[name]']);
+    }
+
+    public function testWithObjectContextValidatesDefaultGroup(): void
+    {
+        $context = new \stdClass();
+        $validator = $this->validate(['name' => '', 'email' => 'foo'], self::groupedRules(), 'strict')
+            ->withContext($context);
+
+        Assert::same($validator->getContext(), $context);
+        Assert::same(\array_keys($validator->getErrors()), ['[name]']);
+    }
+
+    public function testContextWithNonGroupItemValidatesDefaultGroup(): void
+    {
+        $context = ['strict', new \stdClass()];
+        $validator = $this->validate(['name' => '', 'email' => 'foo'], self::groupedRules(), $context);
+
+        Assert::same($validator->getContext(), $context);
+        Assert::same(\array_keys($validator->getErrors()), ['[name]']);
+    }
+
+    public function testGroupContextsSelectValidationGroups(): void
+    {
+        $sequence = new Constraints\GroupSequence(['strict']);
+
+        foreach (['strict', ['strict'], $sequence, [$sequence]] as $context) {
+            $validator = $this->validate(['name' => '', 'email' => 'foo'], self::groupedRules(), $context);
+
+            Assert::same($validator->getContext(), $context);
+            Assert::same(\array_keys($validator->getErrors()), ['[email]']);
+        }
+    }
+
     public function testErrorsAreComputedOnce(): void
     {
         $calls = 0;
@@ -204,6 +245,14 @@ final class ValidatorTest extends TestCase
             \array_values($validator->getErrors()),
             [['This value is too short. It should have 5 characters or more.']],
         );
+    }
+
+    private static function groupedRules(): array
+    {
+        return [
+            'name' => [new Constraints\NotBlank()],
+            'email' => [new Constraints\Email(groups: ['strict'])],
+        ];
     }
 
     private function validate(mixed $data, array $rules = [], mixed $context = null): ValidatorInterface
