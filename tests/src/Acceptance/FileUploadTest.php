@@ -66,4 +66,42 @@ final class FileUploadTest
 
         self::assertAccepted($response);
     }
+
+    public function testNestedFilterReadsFilesAndOtherUploadsStayReadable(): void
+    {
+        $image = self::image();
+
+        $response = self::server()->post('/profile', [], [$image, self::image('child[avatar]'), self::textFile('notes')]);
+
+        $description = ['name' => 'photo.jpg', 'size' => \strlen($image['content']), 'mimeType' => 'image/jpeg'];
+        Assert::same(self::assertAccepted($response), [
+            'image' => $description,
+            'avatar' => $description,
+            'notes' => 'Not an image.',
+        ]);
+    }
+
+    public function testNestedFilterRejectsInvalidFile(): void
+    {
+        $response = self::server()->post('/profile', [], [self::image(), self::textFile('child[avatar]')]);
+
+        Assert::same(self::assertRejected($response), ['child']);
+    }
+
+    public function testMultipleUploadIsAccepted(): void
+    {
+        $response = self::server()->post('/attachments', [], [self::textFile('attachments[]'), self::textFile('attachments[]')]);
+
+        $description = ['name' => 'notes.txt', 'size' => 13, 'mimeType' => 'text/plain'];
+        Assert::same(self::assertAccepted($response), [$description, $description]);
+    }
+
+    public function testMultipleUploadWithEmptyFieldIsRejected(): void
+    {
+        $noFile = ['field' => 'attachments[]', 'name' => '', 'type' => 'application/octet-stream', 'content' => ''];
+
+        $response = self::server()->post('/attachments', [], [self::textFile('attachments[]'), $noFile]);
+
+        Assert::same(self::assertRejected($response), ['attachments[1]']);
+    }
 }

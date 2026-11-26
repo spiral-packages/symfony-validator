@@ -23,9 +23,9 @@ final class File extends AbstractInput
     ) {}
 
     #[\Override]
-    public function getValue(InputInterface $input, \ReflectionProperty $property): ?UploadedFile
+    public function getValue(InputInterface $input, \ReflectionProperty $property): UploadedFile|array|null
     {
-        /** @var UploadedFile|null $file */
+        /** @var UploadedFile|array|null $file An array for a multiple upload, e.g. `files[]`. */
         $file = $input->getValue('symfony-file', $this->getKey($property));
 
         return $file;
