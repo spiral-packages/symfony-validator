@@ -7,6 +7,7 @@ namespace Spiral\Validation\Symfony\Tests\Functional\Http\Request;
 use Nyholm\Psr7\Stream;
 use Nyholm\Psr7\UploadedFile as PsrUploadedFile;
 use Spiral\Validation\Symfony\Http\Request\FilesBag;
+use Spiral\Validation\Symfony\Tests\Functional\Http\Request\Stub\ScriptedStream;
 use Symfony\Bridge\PsrHttpMessage\Factory\UploadedFile;
 use Testo\Assert;
 use Testo\Test;
@@ -135,22 +136,49 @@ final class FilesBagTest
         \rmdir($dir);
     }
 
-    public function testLocalFileIsUsedInPlace(): void
+    public function testLocalFileSurvivesMove(): void
     {
         $path = (string) \tempnam(\sys_get_temp_dir(), 'files-bag');
         \copy(self::FIXTURE, $path);
         $psr = new PsrUploadedFile(\fopen($path, 'rb'), \filesize($path), \UPLOAD_ERR_OK, 'photo.jpg', 'image/jpeg');
+        $dir = \sys_get_temp_dir() . '/files-bag-' . \uniqid();
 
         $file = (new FilesBag(['image' => $psr]))->get('image');
-
-        Assert::same($file->getPathname(), $path);
+        Assert::notSame($file->getPathname(), $path);
         Assert::true($file->isValid());
-        Assert::same($file->getContent(), \file_get_contents(self::FIXTURE));
-        Assert::same((string) $psr->getStream(), \file_get_contents($path));
+        $moved = $file->move($dir, 'moved.jpg');
 
+        Assert::same(\file_get_contents($moved->getPathname()), \file_get_contents(self::FIXTURE));
+        Assert::same(\file_get_contents($path), \file_get_contents(self::FIXTURE));
+        Assert::same((string) $psr->getStream(), \file_get_contents(self::FIXTURE));
         unset($file, $psr);
-        Assert::true(\is_file($path));
+        \unlink($moved->getPathname());
+        \rmdir($dir);
         \unlink($path);
+    }
+
+    public function testTemporaryCopyIsRemovedWhenCopyingFails(): void
+    {
+        $copy = null;
+        $stream = new ScriptedStream(static function () use (&$copy): string {
+            // The copy being written is the only open plain file of the temp dir.
+            foreach (\get_resources('stream') as $resource) {
+                $uri = \stream_get_meta_data($resource)['uri'] ?? '';
+                \is_file($uri) && \str_starts_with(\realpath($uri), \realpath(\sys_get_temp_dir())) and $copy = $uri;
+            }
+            throw new \RuntimeException('Broken stream.');
+        });
+        $psr = new PsrUploadedFile($stream, 7, \UPLOAD_ERR_OK, 'a.txt', 'text/plain');
+
+        try {
+            (new FilesBag(['file' => $psr]))->get('file');
+            Assert::fail('The copy must fail.');
+        } catch (\RuntimeException $e) {
+            Assert::same($e->getMessage(), 'Broken stream.');
+        }
+
+        Assert::string($copy);
+        Assert::false(\is_file($copy));
     }
 
     public function testFailedUploadKeepsItsError(): void

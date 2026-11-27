@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Spiral\Validation\Symfony\Tests\Functional;
 
-use Nyholm\Psr7\Stream;
 use Nyholm\Psr7\UploadedFile;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -139,8 +138,7 @@ final class ValidationTest extends TestCase
 
             $request = $request->withUploadedFiles([
                 'image' => new UploadedFile(
-                    // A copy: on the fixture's own handle the bag would work on the fixture file itself.
-                    Stream::create((string) \file_get_contents($path)),
+                    fopen($path, 'rb'),
                     filesize($path),
                     0,
                     $path,

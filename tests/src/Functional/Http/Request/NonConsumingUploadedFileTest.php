@@ -8,6 +8,7 @@ use Nyholm\Psr7\Stream;
 use Nyholm\Psr7\UploadedFile;
 use Psr\Http\Message\StreamInterface;
 use Spiral\Validation\Symfony\Http\Request\NonConsumingUploadedFile;
+use Spiral\Validation\Symfony\Tests\Functional\Http\Request\Stub\ScriptedStream;
 use Testo\Assert;
 use Testo\Expect;
 use Testo\Test;
@@ -23,7 +24,6 @@ final class NonConsumingUploadedFileTest
         Assert::same($file->getError(), \UPLOAD_ERR_OK);
         Assert::same($file->getClientFilename(), 'a.txt');
         Assert::same($file->getClientMediaType(), 'text/plain');
-        Assert::null($file->localPath);
     }
 
     public function testFailedUploadHasNoStream(): void
@@ -50,11 +50,25 @@ final class NonConsumingUploadedFileTest
 
         $file->moveTo($target);
 
-        Assert::same($file->localPath, $source);
         Assert::same(\file_get_contents($source), 'content');
         Assert::same(\file_get_contents($target), 'content');
         \unlink($target);
         \unlink($source);
+    }
+
+    public function testCopyEndsOnEmptyReadWithoutEof(): void
+    {
+        $chunks = ['con', 'tent', ''];
+        $stream = new ScriptedStream(static function () use (&$chunks): string {
+            return \array_shift($chunks) ?? throw new \LogicException('Read after the end.');
+        });
+        $file = new NonConsumingUploadedFile(new UploadedFile($stream, 7, \UPLOAD_ERR_OK));
+        $target = self::temporaryFile('');
+
+        $file->moveTo($target);
+
+        Assert::same(\file_get_contents($target), 'content');
+        \unlink($target);
     }
 
     public function testNonSeekableStreamIsCopiedFromItsPosition(): void

@@ -17,11 +17,6 @@ use Psr\Http\Message\UploadedFileInterface;
  */
 final class NonConsumingUploadedFile implements UploadedFileInterface
 {
-    /**
-     * The local file holding the content, when the stream reads one; the bridge then builds on that file.
-     */
-    public readonly ?string $localPath;
-
     private readonly ?StreamInterface $stream;
     private readonly ?int $size;
     private readonly int $error;
@@ -36,10 +31,6 @@ final class NonConsumingUploadedFile implements UploadedFileInterface
         $this->clientMediaType = $file->getClientMediaType();
         // A failed upload has no stream: PSR implementations throw on getStream().
         $this->stream = $this->error === \UPLOAD_ERR_OK ? $file->getStream() : null;
-
-        /** @var mixed $uri */
-        $uri = $this->stream?->getMetadata('uri');
-        $this->localPath = \is_string($uri) && \is_file($uri) ? $uri : null;
     }
 
     #[\Override]
@@ -49,23 +40,21 @@ final class NonConsumingUploadedFile implements UploadedFileInterface
     }
 
     /**
-     * Copies the content to the target; moving to {@see $localPath} is a no-op.
+     * Copies the content to the target. A non-seekable stream is copied from its position and stays drained.
      */
     #[\Override]
     public function moveTo(string $targetPath): void
     {
-        if ($targetPath === $this->localPath) {
-            return;
-        }
-
         $stream = $this->getStream();
         $position = $stream->isSeekable() ? $stream->tell() : null;
         $position === null or $stream->rewind();
 
         // Not SplFileObject: on PHP 8.2 it leaves a stale stat cache, and the copy then looks empty.
         $target = @\fopen($targetPath, 'wb') ?: throw new \RuntimeException(\sprintf('Cannot write to "%s".', $targetPath));
-        while (!$stream->eof()) {
-            \fwrite($target, $stream->read(1048576));
+        // An empty read ends the copy too: some streams never report EOF.
+        while (($chunk = $stream->read(1048576)) !== '') {
+            \fwrite($target, $chunk) === \strlen($chunk)
+                or throw new \RuntimeException(\sprintf('Cannot write to "%s".', $targetPath));
         }
         \fclose($target);
 
