@@ -8,6 +8,7 @@ use Nyholm\Psr7\Stream;
 use Nyholm\Psr7\UploadedFile;
 use Psr\Http\Message\StreamInterface;
 use Spiral\Validation\Symfony\Http\Request\NonConsumingUploadedFile;
+use Spiral\Validation\Symfony\Tests\Functional\Http\Request\Stub\LimitedStorage;
 use Spiral\Validation\Symfony\Tests\Functional\Http\Request\Stub\ScriptedStream;
 use Testo\Assert;
 use Testo\Expect;
@@ -40,6 +41,23 @@ final class NonConsumingUploadedFileTest
         Expect::exception(\RuntimeException::class);
 
         $file->moveTo(\sys_get_temp_dir() . '/missing-' . \uniqid() . '/file');
+    }
+
+    public function testShortWriteFails(): void
+    {
+        LimitedStorage::register();
+        $stream = Stream::create('content');
+        $stream->seek(5);
+        $file = new NonConsumingUploadedFile(new UploadedFile($stream, 7, \UPLOAD_ERR_OK));
+
+        try {
+            $file->moveTo('limited://3/file');
+            Assert::fail('The copy must fail.');
+        } catch (\RuntimeException $e) {
+            Assert::same($e->getMessage(), 'Cannot write to "limited://3/file".');
+        }
+
+        Assert::same($stream->tell(), 5);
     }
 
     public function testLocalFileIsCopiedToOtherTarget(): void
