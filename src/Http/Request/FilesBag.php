@@ -6,36 +6,63 @@ namespace Spiral\Validation\Symfony\Http\Request;
 
 use Psr\Http\Message\UploadedFileInterface;
 use Spiral\Http\Request\InputBag;
-use Symfony\Bridge\PsrHttpMessage\Factory\UploadedFile;
 
+/**
+ * Uploaded files as Symfony files, keeping nested arrays (e.g. `files[]`) as arrays.
+ *
+ * Wraps only what is read. One wrapper per PSR upload for the whole process: the input manager builds
+ * a new bag for every prefixed (nested filter) input, and all of them must hand out the same file.
+ */
 final class FilesBag extends InputBag
 {
-    public function __construct(array $data, string $prefix = '')
+    /** @var \WeakMap<UploadedFileInterface, UploadedFile>|null */
+    private static ?\WeakMap $files = null;
+
+    #[\Override]
+    public function all(): array
     {
-        parent::__construct($this->wrapFiles($data), $prefix);
+        return self::wrapTree(parent::all());
     }
 
     /**
-     * Gets a temporary file path.
-     *
-     * @psalm-suppress FalsableReturnStatement, InvalidFalsableReturnType tempnam() returns false only when the
-     *     system temp directory is unusable; the resulting TypeError is the existing failure mode.
+     * Counts without wrapping: wrapping copies every file.
      */
-    protected function getTemporaryPath(): string
+    #[\Override]
+    public function count(): int
     {
-        return \tempnam(\sys_get_temp_dir(), \uniqid('symfony', true));
+        return \count(parent::all());
     }
 
-    /**
-     * Wraps every file of the uploaded-files tree, keeping nested arrays (e.g. `files[]`) as arrays.
-     */
-    private function wrapFiles(array $files): array
+    #[\Override]
+    public function get(int|string $name, mixed $default = null): mixed
     {
-        return \array_map(
-            fn(UploadedFileInterface|array $file): UploadedFile|array => \is_array($file)
-                ? $this->wrapFiles($file)
-                : new UploadedFile($file, fn(): string => $this->getTemporaryPath()),
-            $files,
-        );
+        return $this->has($name) ? self::wrap(parent::get($name)) : $default;
+    }
+
+    #[\Override]
+    public function __debugInfo(): array
+    {
+        return parent::all();
+    }
+
+    private static function wrap(mixed $value): mixed
+    {
+        return match (true) {
+            $value instanceof UploadedFileInterface => self::file($value),
+            \is_array($value) => self::wrapTree($value),
+            default => $value,
+        };
+    }
+
+    private static function file(UploadedFileInterface $file): UploadedFile
+    {
+        $files = self::$files ??= new \WeakMap();
+
+        return $files[$file] ??= new UploadedFile($file);
+    }
+
+    private static function wrapTree(array $files): array
+    {
+        return \array_map(self::wrap(...), $files);
     }
 }

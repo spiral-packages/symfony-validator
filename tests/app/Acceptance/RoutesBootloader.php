@@ -15,6 +15,8 @@ final class RoutesBootloader extends Bootloader
         '/simple' => 'simple',
         '/array-mapping' => 'arrayMapping',
         '/post' => 'post',
+        '/profile' => 'profile',
+        '/attachments' => 'attachments',
     ];
 
     public function boot(RouterInterface $router): void
