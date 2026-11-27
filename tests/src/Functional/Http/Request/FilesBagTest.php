@@ -128,12 +128,27 @@ final class FilesBagTest
         $temporary = $file->getPathname();
 
         $moved = $file->move($dir, 'moved.txt');
+        Assert::false(\is_file($temporary));
+        // tempnam() may hand out the freed name again, e.g. to another wrapper.
+        \file_put_contents($temporary, 'reused');
         unset($file, $psr);
 
-        Assert::false(\is_file($temporary));
+        Assert::same(\file_get_contents($temporary), 'reused');
         Assert::same(\file_get_contents($moved->getPathname()), 'content');
+        \unlink($temporary);
         \unlink($moved->getPathname());
         \rmdir($dir);
+    }
+
+    public function testCloneKeepsItsFileWhenTheOriginalIsGone(): void
+    {
+        $psr = self::file('photo.jpg');
+        $file = (new FilesBag(['image' => $psr]))->get('image');
+        $clone = clone $file;
+        unset($file, $psr);
+
+        Assert::same($clone->getContent(), 'content');
+        \unlink($clone->getPathname());
     }
 
     public function testLocalFileSurvivesMove(): void
