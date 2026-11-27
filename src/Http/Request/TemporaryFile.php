@@ -38,6 +38,19 @@ final class TemporaryFile
         $this->path = null;
     }
 
+    public function __serialize(): array
+    {
+        throw new \BadMethodCallException(\sprintf('Cannot serialize %s.', self::class));
+    }
+
+    /**
+     * Forbidden: a crafted payload would delete an arbitrary file on destruction.
+     */
+    public function __unserialize(array $data): void
+    {
+        throw new \BadMethodCallException(\sprintf('Cannot unserialize %s.', self::class));
+    }
+
     public function __destruct()
     {
         $this->remove();
