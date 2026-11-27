@@ -12,6 +12,14 @@ use Testo\Test;
 #[Test]
 final class TemporaryFileTest
 {
+    public function testCannotBeCloned(): void
+    {
+        $file = new TemporaryFile();
+        Expect::exception(\BadMethodCallException::class);
+
+        clone $file;
+    }
+
     public function testCannotBeSerialized(): void
     {
         $file = new TemporaryFile();

@@ -71,6 +71,23 @@ final class NonConsumingUploadedFileTest
         \unlink($target);
     }
 
+    public function testFailedCopyKeepsTheStreamPosition(): void
+    {
+        $stream = new ScriptedStream(static fn(): string => throw new \RuntimeException('Broken stream.'), 5);
+        $file = new NonConsumingUploadedFile(new UploadedFile($stream, 7, \UPLOAD_ERR_OK));
+        $target = self::temporaryFile('');
+
+        try {
+            $file->moveTo($target);
+            Assert::fail('The copy must fail.');
+        } catch (\RuntimeException $e) {
+            Assert::same($e->getMessage(), 'Broken stream.');
+        }
+
+        Assert::same($stream->tell(), 5);
+        \unlink($target);
+    }
+
     public function testNonSeekableStreamIsCopiedFromItsPosition(): void
     {
         $stream = Stream::create('content');

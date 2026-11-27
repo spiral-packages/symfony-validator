@@ -7,7 +7,9 @@ namespace Spiral\Validation\Symfony\Tests\Functional\Http\Request\Stub;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * A readable, non-seekable stream whose reads are answered by a callback and that never reports EOF.
+ * A readable stream whose reads are answered by a callback and that never reports EOF.
+ *
+ * Seekable only when created with a position; seeking just moves that position.
  */
 final class ScriptedStream implements StreamInterface
 {
@@ -16,6 +18,7 @@ final class ScriptedStream implements StreamInterface
      */
     public function __construct(
         private readonly \Closure $read,
+        private ?int $position = null,
     ) {}
 
     public function close(): void {}
@@ -32,7 +35,7 @@ final class ScriptedStream implements StreamInterface
 
     public function tell(): int
     {
-        throw new \RuntimeException('Not seekable.');
+        return $this->position ?? throw new \RuntimeException('Not seekable.');
     }
 
     public function eof(): bool
@@ -42,17 +45,17 @@ final class ScriptedStream implements StreamInterface
 
     public function isSeekable(): bool
     {
-        return false;
+        return $this->position !== null;
     }
 
     public function seek(int $offset, int $whence = \SEEK_SET): void
     {
-        throw new \RuntimeException('Not seekable.');
+        $this->position = $offset;
     }
 
     public function rewind(): void
     {
-        throw new \RuntimeException('Not seekable.');
+        $this->position = 0;
     }
 
     public function isWritable(): bool

@@ -95,6 +95,18 @@ final class FilesBagTest
         Assert::same((new FilesBag($files, 'child'))->get('avatar'), $avatar);
     }
 
+    public function testCountingAndDumpingDoNotWrap(): void
+    {
+        // A consumed upload can't be wrapped: wrapping would throw.
+        $psr = self::file('photo.jpg');
+        $psr->moveTo($moved = (string) \tempnam(\sys_get_temp_dir(), 'files-bag'));
+        $bag = new FilesBag(['image' => $psr]);
+
+        Assert::same(\count($bag), 1);
+        Assert::same($bag->__debugInfo(), ['image' => $psr]);
+        \unlink($moved);
+    }
+
     public function testTemporaryCopyIsRemovedWithTheUpload(): void
     {
         $psr = self::file('photo.jpg');

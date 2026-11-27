@@ -38,6 +38,14 @@ final class TemporaryFile
         $this->path = null;
     }
 
+    /**
+     * Forbidden: two owners of one path would delete it under each other.
+     */
+    public function __clone()
+    {
+        throw new \BadMethodCallException(\sprintf('Cannot clone %s.', self::class));
+    }
+
     public function __serialize(): array
     {
         throw new \BadMethodCallException(\sprintf('Cannot serialize %s.', self::class));

@@ -24,10 +24,25 @@ final class FilesBag extends InputBag
         return self::wrapTree(parent::all());
     }
 
+    /**
+     * Counts without wrapping: wrapping copies every file.
+     */
+    #[\Override]
+    public function count(): int
+    {
+        return \count(parent::all());
+    }
+
     #[\Override]
     public function get(int|string $name, mixed $default = null): mixed
     {
         return $this->has($name) ? self::wrap(parent::get($name)) : $default;
+    }
+
+    #[\Override]
+    public function __debugInfo(): array
+    {
+        return parent::all();
     }
 
     private static function wrap(mixed $value): mixed

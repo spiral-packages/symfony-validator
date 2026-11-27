@@ -51,15 +51,17 @@ final class NonConsumingUploadedFile implements UploadedFileInterface
 
         // Not SplFileObject: on PHP 8.2 it leaves a stale stat cache, and the copy then looks empty.
         $target = @\fopen($targetPath, 'wb') ?: throw new \RuntimeException(\sprintf('Cannot write to "%s".', $targetPath));
-        // An empty read ends the copy too: some streams never report EOF.
-        while (($chunk = $stream->read(1048576)) !== '') {
-            \fwrite($target, $chunk) === \strlen($chunk)
-                or throw new \RuntimeException(\sprintf('Cannot write to "%s".', $targetPath));
+        try {
+            // An empty read ends the copy too: some streams never report EOF.
+            while (($chunk = $stream->read(1048576)) !== '') {
+                \fwrite($target, $chunk) === \strlen($chunk)
+                    or throw new \RuntimeException(\sprintf('Cannot write to "%s".', $targetPath));
+            }
+        } finally {
+            \fclose($target);
+            // Whoever reads the PSR stream later starts where they left off, also after a failed copy.
+            $position === null or $stream->seek($position);
         }
-        \fclose($target);
-
-        // Whoever reads the PSR stream later starts where they left off.
-        $position === null or $stream->seek($position);
     }
 
     #[\Override]
