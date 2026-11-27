@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/spiral-packages/symfony-validator/compare/1.6.0...1.6.1) (2026-11-26)
+
+
+### Documentation
+
+* point the Codecov badge at the 1.x branch report ([#60](https://github.com/spiral-packages/symfony-validator/issues/60)) ([7a0363e](https://github.com/spiral-packages/symfony-validator/commit/7a0363ef6325edb738cc1dd2f4559e6ef8404454))
+
 ## [1.6.0](https://github.com/spiral-packages/symfony-validator/compare/1.5.0...1.6.0) (2026-11-26)
 
 
