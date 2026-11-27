@@ -196,12 +196,16 @@ final class FilesBagTest
             throw new \RuntimeException('Broken stream.');
         });
         $psr = new PsrUploadedFile($stream, 7, \UPLOAD_ERR_OK, 'a.txt', 'text/plain');
+        // With arguments in traces (php.ini-development), the exception keeps the temp file owner alive.
+        $ignoreArgs = \ini_set('zend.exception_ignore_args', '0');
 
         try {
             (new FilesBag(['file' => $psr]))->get('file');
             Assert::fail('The copy must fail.');
         } catch (\RuntimeException $e) {
             Assert::same($e->getMessage(), 'Broken stream.');
+        } finally {
+            \ini_set('zend.exception_ignore_args', (string) $ignoreArgs);
         }
 
         Assert::string($copy);
